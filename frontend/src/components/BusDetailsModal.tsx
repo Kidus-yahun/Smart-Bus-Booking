@@ -1,8 +1,9 @@
-import { Bus, Clock, MapPin, Navigation, Star, Users, X } from 'lucide-react';
+import { Bus, Clock, MapPin, Navigation, Phone, Star, Users, Wifi, X, Zap } from 'lucide-react';
 import { useEffect } from 'react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Separator } from './ui/separator';
 
 interface BusDetails {
   id: string;

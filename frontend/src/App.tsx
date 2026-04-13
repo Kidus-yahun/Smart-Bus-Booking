@@ -2,12 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { AuthWrapper } from './components/AuthWrapper';
 import { BottomNav } from './components/BottomNav';
+import { BusArrivalsList } from './components/BusArrivalsList';
 import { Header } from './components/Header';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Booking } from './pages/Booking';
 import { Confirmation } from './pages/Confirmation';
-import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { Settings } from './pages/Settings';
 import { Trips } from './pages/Trips';
@@ -59,16 +59,12 @@ function MainApp() {
     setCurrentState(screen);
   };
 
-  const handleBackFromScreen = () => {
-    setCurrentState('home');
-  };
-
   const renderPage = () => {
     switch (currentState) {
       case 'profile':
         return <Profile onBack={() => {}} />;
       case 'trips':
-        return <Trips onBack={() => {}} />;
+        return <Trips onBack={() => setCurrentState('home')} />;
       case 'settings':
         return <Settings onBack={() => {}} />;
       case 'booking':
@@ -84,7 +80,15 @@ function MainApp() {
           <Confirmation ticketId={ticketId} onNewBooking={handleNewBooking} />
         ) : null;
       default:
-        return <Home onSelectBus={handleSelectBus} />;
+        return (
+          <>
+            <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 mb-4">
+              <h2 className="font-medium mb-1">Welcome back, {user.name.split(' ')[0]}! 👋</h2>
+              <p className="text-sm text-muted-foreground">Ready to book your next bus journey?</p>
+            </div>
+            <BusArrivalsList onSelectBus={handleSelectBus} />
+          </>
+        );
     }
   };
 
