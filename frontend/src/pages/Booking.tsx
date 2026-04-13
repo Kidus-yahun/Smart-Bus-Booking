@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SeatSelection } from '../components/SeatSelection';
 import { Button } from '../components/ui/button';
@@ -19,16 +19,23 @@ interface BookingProps {
   onBookingComplete: (ticketId: string) => void;
 }
 
-type BookingStep = 'fare-selection' | 'seat-selection' | 'payment-processing';
+type BookingStep = 'station-selection' | 'fare-selection' | 'seat-selection' | 'payment-processing';
 
 export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
-  const [bookingStep, setBookingStep] = useState<BookingStep>('fare-selection');
+  const [bookingStep, setBookingStep] = useState<BookingStep>('station-selection');
   const [selectedFareType, setSelectedFareType] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [boardingStationId, setBoardingStationId] = useState<number | null>(null);
+  const [destinationStationId, setDestinationStationId] = useState<number | null>(null);
 
   const scheduleId = parseInt(busId, 10);
+
+  const { data: stations, isLoading: stationsLoading } = useQuery({
+    queryKey: ['stations'],
+    queryFn: () => busesApi.getStations(),
+  });
 
   const { data: schedule, isLoading: scheduleLoading } = useQuery({
     queryKey: ['schedule', scheduleId],
@@ -57,6 +64,12 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     }
   }, [routeData]);
 
+  const handleStationContinue = () => {
+    if (boardingStationId && destinationStationId) {
+      setBookingStep('fare-selection');
+    }
+  };
+
   const selectedFare = farePrices?.find((f) => f.fare_type === selectedFareType);
   const totalPrice = selectedFare ? selectedFare.price_etb * quantity : 0;
 
@@ -83,8 +96,8 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
         schedule_id: scheduleId,
         fare_type: selectedFareType,
         quantity,
-        boarding_station_id: routeData.origin_station_id,
-        destination_station_id: routeData.destination_station_id,
+        boarding_station_id: boardingStationId || routeData.origin_station_id,
+        destination_station_id: destinationStationId || routeData.destination_station_id,
         selected_seat_ids: seatIds,
       })) as { id: number; ticket_number: string };
 
@@ -95,7 +108,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     }
   };
 
-  if (scheduleLoading || routesLoading) {
+  if (stationsLoading || scheduleLoading || routesLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -111,6 +124,68 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
         </Button>
         <h2 className="text-xl font-semibold">Book Ticket</h2>
       </div>
+
+      {bookingStep === 'station-selection' && (
+        <Card className="p-4">
+          <h3 className="font-medium mb-4">Select Stations</h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Boarding Station</label>
+              <Select
+                value={boardingStationId?.toString() || ''}
+                onValueChange={(v) => setBoardingStationId(parseInt(v, 10))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select boarding station" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stations?.map((station) => (
+                    <SelectItem key={station.id} value={station.id.toString()}>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {station.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Destination Station</label>
+              <Select
+                value={destinationStationId?.toString() || ''}
+                onValueChange={(v) => setDestinationStationId(parseInt(v, 10))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select destination station" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stations
+                    ?.filter((s) => s.id !== boardingStationId)
+                    .map((station) => (
+                      <SelectItem key={station.id} value={station.id.toString()}>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          {station.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Button
+            className="w-full mt-4"
+            onClick={handleStationContinue}
+            disabled={!boardingStationId || !destinationStationId}
+          >
+            Continue
+          </Button>
+        </Card>
+      )}
 
       {bookingStep === 'fare-selection' && (
         <Card className="p-4">
