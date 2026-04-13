@@ -101,7 +101,7 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
 
             <div className="mt-3 flex justify-end">
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 onClick={() => onSelectBus(arrival.bus_id.toString())}
               >

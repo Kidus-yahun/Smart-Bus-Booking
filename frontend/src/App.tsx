@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { AuthWrapper } from './components/AuthWrapper';
+import { BottomNav } from './components/BottomNav';
 import { Header } from './components/Header';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -13,6 +15,18 @@ import { Trips } from './pages/Trips';
 import './styles/mobile.css';
 
 type AppState = 'home' | 'booking' | 'confirmation' | 'profile' | 'trips' | 'settings';
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
+
+const pageTransition = {
+  type: 'spring',
+  stiffness: 300,
+  damping: 30,
+};
 
 function MainApp() {
   const { user } = useAuth();
@@ -41,12 +55,37 @@ function MainApp() {
     setTicketId(null);
   };
 
-  const handleNavigate = (screen: 'profile' | 'trips' | 'settings') => {
+  const handleNavigate = (screen: 'home' | 'profile' | 'trips' | 'settings') => {
     setCurrentState(screen);
   };
 
   const handleBackFromScreen = () => {
     setCurrentState('home');
+  };
+
+  const renderPage = () => {
+    switch (currentState) {
+      case 'profile':
+        return <Profile onBack={handleBackFromScreen} />;
+      case 'trips':
+        return <Trips onBack={handleBackFromScreen} />;
+      case 'settings':
+        return <Settings onBack={handleBackFromScreen} />;
+      case 'booking':
+        return selectedBusId ? (
+          <Booking
+            busId={selectedBusId}
+            onBack={handleBackToHome}
+            onBookingComplete={handleBookingComplete}
+          />
+        ) : null;
+      case 'confirmation':
+        return ticketId ? (
+          <Confirmation ticketId={ticketId} onNewBooking={handleNewBooking} />
+        ) : null;
+      default:
+        return <Home onSelectBus={handleSelectBus} />;
+    }
   };
 
   if (!user) {
@@ -57,48 +96,37 @@ function MainApp() {
     );
   }
 
-  if (currentState === 'profile') {
-    return <Profile onBack={handleBackFromScreen} />;
-  }
-
-  if (currentState === 'trips') {
-    return <Trips onBack={handleBackFromScreen} />;
-  }
-
-  if (currentState === 'settings') {
-    return <Settings onBack={handleBackFromScreen} />;
-  }
-
   return (
-    <div className="min-h-screen bg-background safe-area-top">
+    <div className="min-h-screen bg-background safe-area-top pb-16">
       <div className="status-bar-spacer"></div>
-      <Header onNavigate={handleNavigate} />
+      <Header />
 
-      <div className="mobile-container mx-auto p-4 max-w-md space-y-6 mobile-scroll">
-        {currentState === 'home' && (
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 mb-4">
-            <h2 className="font-medium mb-1">Welcome back, {user.name.split(' ')[0]}!</h2>
-            <p className="text-sm text-muted-foreground">Ready to book your next bus journey?</p>
-          </div>
-        )}
-
-        {currentState === 'home' && <Home onSelectBus={handleSelectBus} />}
-
-        {currentState === 'booking' && selectedBusId && (
-          <Booking
-            busId={selectedBusId}
-            onBack={handleBackToHome}
-            onBookingComplete={handleBookingComplete}
-          />
-        )}
-
-        {currentState === 'confirmation' && ticketId && (
-          <Confirmation ticketId={ticketId} onNewBooking={handleNewBooking} />
-        )}
+      <div className="mobile-container mx-auto p-4 max-w-md space-y-6 mobile-scroll pb-20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentState}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
+            className="w-full"
+          >
+            {renderPage()}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      <div className="h-6 safe-area-bottom"></div>
-      <div className="keyboard-spacer"></div>
+      <BottomNav
+        currentScreen={
+          currentState === 'confirmation' || currentState === 'booking'
+            ? 'home'
+            : currentState === 'profile' || currentState === 'trips' || currentState === 'settings'
+              ? currentState
+              : 'home'
+        }
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 }
