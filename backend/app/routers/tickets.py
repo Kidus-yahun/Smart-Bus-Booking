@@ -45,15 +45,15 @@ router = APIRouter()
 
 def generate_ticket_number() -> str:
     """Generate unique ticket number."""
-    prefix = "TKT"
-    timestamp = datetime.now().strftime("%Y%m%d")
-    random_suffix = "".join(random.choices(string.digits, k=4))
-    return f"{prefix}-{timestamp}-{random_suffix}"
+    prefix = 'TKT'
+    timestamp = datetime.now().strftime('%Y%m%d')
+    random_suffix = ''.join(random.choices(string.digits, k=4))
+    return f'{prefix}-{timestamp}-{random_suffix}'
 
 
 def generate_payment_reference() -> str:
     """Generate unique payment reference."""
-    return f"PAY-{uuid.uuid4().hex[:12].upper()}"
+    return f'PAY-{uuid.uuid4().hex[:12].upper()}'
 
 
 def generate_qr_code(ticket_number: str) -> str:
@@ -63,14 +63,14 @@ def generate_qr_code(ticket_number: str) -> str:
     qr.make(fit=True)
 
     # Create QR code image
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qr.make_image(fill_color='black', back_color='white')
 
     # Convert to base64
     buffer = io.BytesIO()
-    img.save(buffer, format="PNG")
+    img.save(buffer, format='PNG')
     img_str = base64.b64encode(buffer.getvalue()).decode()
 
-    return f"data:image/png;base64,{img_str}"
+    return f'data:image/png;base64,{img_str}'
 
 
 def calculate_fare(fare_type: FareType, base_price: float) -> float:
@@ -84,7 +84,7 @@ def calculate_fare(fare_type: FareType, base_price: float) -> float:
     return base_price * fare_multipliers.get(fare_type, 1.0)
 
 
-@router.post("/book", response_model=TicketDetail)
+@router.post('/book', response_model=TicketDetail)
 async def book_ticket(
     ticket_data: TicketCreateWithSeats,
     current_user: User = Depends(get_current_user),
@@ -100,26 +100,26 @@ async def book_ticket(
     )
 
     if not schedule:
-        raise HTTPException(status_code=404, detail="Schedule not found")
+        raise HTTPException(status_code=404, detail='Schedule not found')
 
     if schedule.is_cancelled:
-        raise HTTPException(status_code=400, detail="This schedule has been cancelled")
+        raise HTTPException(status_code=400, detail='This schedule has been cancelled')
 
     # Validate selected seats
     if len(ticket_data.selected_seat_ids) != ticket_data.quantity:
         raise HTTPException(
-            status_code=400, detail=f"Must select exactly {ticket_data.quantity} seats"
+            status_code=400, detail=f'Must select exactly {ticket_data.quantity} seats'
         )
 
     # Check if selected seats are available
     for seat_id in ticket_data.selected_seat_ids:
         seat = db.query(Seat).filter(Seat.id == seat_id).first()
         if not seat:
-            raise HTTPException(status_code=400, detail=f"Seat {seat_id} not found")
+            raise HTTPException(status_code=400, detail=f'Seat {seat_id} not found')
 
         if not seat.is_available:
             raise HTTPException(
-                status_code=400, detail=f"Seat {seat.seat_number} is not available"
+                status_code=400, detail=f'Seat {seat.seat_number} is not available'
             )
 
         # Check if seat is already reserved for this schedule
@@ -129,7 +129,7 @@ async def book_ticket(
                 and_(
                     SeatReservation.seat_id == seat_id,
                     SeatReservation.schedule_id == ticket_data.schedule_id,
-                    SeatReservation.status.in_(["reserved", "confirmed"]),
+                    SeatReservation.status.in_(['reserved', 'confirmed']),
                 )
             )
             .first()
@@ -137,7 +137,7 @@ async def book_ticket(
 
         if existing_reservation:
             raise HTTPException(
-                status_code=400, detail=f"Seat {seat.seat_number} is already reserved"
+                status_code=400, detail=f'Seat {seat.seat_number} is already reserved'
             )
 
     # Get or create fare price for this route and fare type
@@ -188,7 +188,7 @@ async def book_ticket(
     db_payment = Payment(
         ticket_id=db_ticket.id,
         amount_etb=total_price,
-        payment_method="pending",
+        payment_method='pending',
         payment_reference=payment_reference,
         status=PaymentStatus.PENDING,
     )
@@ -207,10 +207,15 @@ async def book_ticket(
             seat_id=seat_id,
             ticket_id=db_ticket.id,
             schedule_id=ticket_data.schedule_id,
-            status="reserved",
+            status='confirmed',
             expires_at=reservation_expires,
         )
         db.add(seat_reservation)
+
+        seat = db.query(Seat).filter(Seat.id == seat_id).first()
+        if seat:
+            seat.is_available = False
+            db.add(seat)
 
     db.commit()
 
@@ -223,7 +228,7 @@ async def book_ticket(
     return db_ticket
 
 
-@router.post("/payment/{ticket_id}", response_model=PaymentSchema)
+@router.post('/payment/{ticket_id}', response_model=PaymentSchema)
 async def process_payment(
     ticket_id: int,
     payment_data: dict,  # Contains payment_method, mobile_number, etc.
@@ -239,18 +244,18 @@ async def process_payment(
     )
 
     if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
+        raise HTTPException(status_code=404, detail='Ticket not found')
 
     if ticket.status != TicketStatus.PENDING:
-        raise HTTPException(status_code=400, detail="Ticket payment already processed")
+        raise HTTPException(status_code=400, detail='Ticket payment already processed')
 
     # Get pending payment
     payment = db.query(Payment).filter(Payment.ticket_id == ticket_id).first()
     if not payment:
-        raise HTTPException(status_code=404, detail="Payment record not found")
+        raise HTTPException(status_code=404, detail='Payment record not found')
 
     # Process payment (mock implementation)
-    payment_method = payment_data.get("payment_method", "mobile_money")
+    payment_method = payment_data.get('payment_method', 'mobile_money')
 
     # Simulate payment processing
     success = True  # In real implementation, call payment gateway
@@ -272,7 +277,7 @@ async def process_payment(
         )
 
         for reservation in seat_reservations:
-            reservation.status = "confirmed"
+            reservation.status = 'confirmed'
             reservation.expires_at = None  # Remove expiration
 
         # Update bus schedule occupancy
@@ -289,10 +294,10 @@ async def process_payment(
     else:
         payment.status = PaymentStatus.FAILED
         db.commit()
-        raise HTTPException(status_code=400, detail="Payment processing failed")
+        raise HTTPException(status_code=400, detail='Payment processing failed')
 
 
-@router.get("/my-tickets", response_model=list[TicketDetail])
+@router.get('/my-tickets', response_model=list[TicketDetail])
 async def get_my_tickets(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -313,7 +318,7 @@ async def get_my_tickets(
     return tickets
 
 
-@router.get("/{ticket_id}", response_model=TicketDetail)
+@router.get('/{ticket_id}', response_model=TicketDetail)
 async def get_ticket(
     ticket_id: int,
     current_user: User = Depends(get_current_user),
@@ -334,12 +339,12 @@ async def get_ticket(
     )
 
     if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
+        raise HTTPException(status_code=404, detail='Ticket not found')
 
     return ticket
 
 
-@router.put("/{ticket_id}/cancel", response_model=TicketSchema)
+@router.put('/{ticket_id}/cancel', response_model=TicketSchema)
 async def cancel_ticket(
     ticket_id: int,
     current_user: User = Depends(get_current_user),
@@ -353,19 +358,19 @@ async def cancel_ticket(
     )
 
     if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
+        raise HTTPException(status_code=404, detail='Ticket not found')
 
     if ticket.status == TicketStatus.CANCELLED:
-        raise HTTPException(status_code=400, detail="Ticket already cancelled")
+        raise HTTPException(status_code=400, detail='Ticket already cancelled')
 
     if ticket.status == TicketStatus.USED:
-        raise HTTPException(status_code=400, detail="Cannot cancel used ticket")
+        raise HTTPException(status_code=400, detail='Cannot cancel used ticket')
 
     # Check if cancellation is allowed (e.g., at least 1 hour before departure)
     if ticket.travel_date - datetime.utcnow() < timedelta(hours=1):
         raise HTTPException(
             status_code=400,
-            detail="Cannot cancel ticket less than 1 hour before departure",
+            detail='Cannot cancel ticket less than 1 hour before departure',
         )
 
     # Update ticket status
@@ -377,7 +382,7 @@ async def cancel_ticket(
     )
 
     for reservation in seat_reservations:
-        reservation.status = "cancelled"
+        reservation.status = 'cancelled'
 
     # Update bus schedule occupancy
     schedule = (
@@ -399,7 +404,7 @@ async def cancel_ticket(
     return ticket
 
 
-@router.get("/fares/routes/{route_id}", response_model=list[FarePriceSchema])
+@router.get('/fares/routes/{route_id}', response_model=list[FarePriceSchema])
 async def get_route_fares(route_id: int, db: Session = Depends(get_db)):
     """Get fare prices for a specific route."""
     fares = (
@@ -411,7 +416,7 @@ async def get_route_fares(route_id: int, db: Session = Depends(get_db)):
     return fares
 
 
-@router.post("/validate/{ticket_number}")
+@router.post('/validate/{ticket_number}')
 async def validate_ticket(
     ticket_number: str,
     current_user: User = Depends(get_current_user),
@@ -421,33 +426,33 @@ async def validate_ticket(
     ticket = db.query(Ticket).filter(Ticket.ticket_number == ticket_number).first()
 
     if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
+        raise HTTPException(status_code=404, detail='Ticket not found')
 
     if ticket.status != TicketStatus.CONFIRMED:
-        raise HTTPException(status_code=400, detail="Ticket is not valid for travel")
+        raise HTTPException(status_code=400, detail='Ticket is not valid for travel')
 
     # Check if ticket is for today (or allow some flexibility)
     travel_date = ticket.travel_date.date()
     today = datetime.utcnow().date()
 
     if travel_date != today:
-        raise HTTPException(status_code=400, detail="Ticket is not valid for today")
+        raise HTTPException(status_code=400, detail='Ticket is not valid for today')
 
     # Mark ticket as used
     ticket.status = TicketStatus.USED
     db.commit()
 
     return {
-        "valid": True,
-        "ticket_number": ticket_number,
-        "passenger_name": ticket.user.name,
-        "route": f"{ticket.schedule.bus.route.route_number}",
-        "quantity": ticket.quantity,
-        "fare_type": ticket.fare_type,
+        'valid': True,
+        'ticket_number': ticket_number,
+        'passenger_name': ticket.user.name,
+        'route': f'{ticket.schedule.bus.route.route_number}',
+        'quantity': ticket.quantity,
+        'fare_type': ticket.fare_type,
     }
 
 
-@router.post("/reserve-seats")
+@router.post('/reserve-seats')
 async def reserve_seats_temporarily(
     seat_ids: list[int],
     schedule_id: int,
@@ -463,7 +468,7 @@ async def reserve_seats_temporarily(
                 and_(
                     SeatReservation.seat_id == seat_id,
                     SeatReservation.schedule_id == schedule_id,
-                    SeatReservation.status == "reserved",
+                    SeatReservation.status == 'reserved',
                     SeatReservation.expires_at > datetime.utcnow(),
                 )
             )
@@ -474,7 +479,7 @@ async def reserve_seats_temporarily(
             seat = db.query(Seat).filter(Seat.id == seat_id).first()
             raise HTTPException(
                 status_code=400,
-                detail=f"Seat {seat.seat_number if seat else seat_id} is temporarily reserved",
+                detail=f'Seat {seat.seat_number if seat else seat_id} is temporarily reserved',
             )
 
     # Create temporary reservations
@@ -485,7 +490,7 @@ async def reserve_seats_temporarily(
         reservation = SeatReservation(
             seat_id=seat_id,
             schedule_id=schedule_id,
-            status="reserved",
+            status='reserved',
             expires_at=reservation_expires,
         )
         db.add(reservation)
@@ -494,13 +499,13 @@ async def reserve_seats_temporarily(
     db.commit()
 
     return {
-        "message": f"Reserved {len(seat_ids)} seats temporarily",
-        "expires_at": reservation_expires,
-        "reservation_ids": [r.id for r in reservations],
+        'message': f'Reserved {len(seat_ids)} seats temporarily',
+        'expires_at': reservation_expires,
+        'reservation_ids': [r.id for r in reservations],
     }
 
 
-@router.delete("/cleanup-expired-reservations")
+@router.delete('/cleanup-expired-reservations')
 async def cleanup_expired_reservations(
     current_user: User = Depends(require_role([UserRole.ADMIN])),
     db: Session = Depends(get_db),
@@ -510,7 +515,7 @@ async def cleanup_expired_reservations(
         db.query(SeatReservation)
         .filter(
             and_(
-                SeatReservation.status == "reserved",
+                SeatReservation.status == 'reserved',
                 SeatReservation.expires_at < datetime.utcnow(),
             )
         )
@@ -522,10 +527,10 @@ async def cleanup_expired_reservations(
 
     db.commit()
 
-    return {"message": f"Cleaned up {len(expired_reservations)} expired reservations"}
+    return {'message': f'Cleaned up {len(expired_reservations)} expired reservations'}
 
 
-@router.get("/statistics/daily")
+@router.get('/statistics/daily')
 async def get_daily_statistics(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -558,8 +563,8 @@ async def get_daily_statistics(
     total_revenue = sum(payment.amount_etb for payment in daily_revenue)
 
     return {
-        "date": today.isoformat(),
-        "tickets_sold": daily_tickets,
-        "revenue_etb": total_revenue,
-        "currency": "ETB",
+        'date': today.isoformat(),
+        'tickets_sold': daily_tickets,
+        'revenue_etb': total_revenue,
+        'currency': 'ETB',
     }

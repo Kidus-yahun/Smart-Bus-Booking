@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Bus, Download, Loader2, MoreVertical, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import QRCode from 'qrcode';
+import { useRef, useState } from 'react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -156,8 +157,18 @@ export function Trips({ onBack }: TripsProps) {
                 {ticket.qr_code && (
                   <div className="mt-3 pt-3 border-t">
                     <p className="text-xs text-muted-foreground mb-2">QR Code</p>
-                    <div className="bg-white p-2 inline-block rounded">
-                      <p className="text-xs font-mono">{ticket.qr_code}</p>
+                    <div className="flex justify-center">
+                      <canvas
+                        className="w-24 h-24"
+                        ref={(canvas) => {
+                          if (canvas && ticket.qr_code) {
+                            QRCode.toCanvas(canvas, ticket.qr_code, {
+                              width: 96,
+                              margin: 1,
+                            });
+                          }
+                        }}
+                      />
                     </div>
                   </div>
                 )}

@@ -268,6 +268,7 @@ export const ticketsApi = {
     quantity: number;
     boarding_station_id: number;
     destination_station_id: number;
+    selected_seat_ids?: number[];
   }): Promise<unknown> {
     return fetchApi<unknown>('/api/tickets/book', {
       method: 'POST',

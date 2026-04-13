@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { SeatSelection } from '../components/SeatSelection';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import {
@@ -25,13 +26,13 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
   const [selectedFareType, setSelectedFareType] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
-  const { data: bus, isLoading: busLoading } = useQuery({
-    queryKey: ['bus', busId],
-    queryFn: () => {
-      const busNum = parseInt(busId, 10);
-      return busesApi.getBuses(busNum);
-    },
+  const scheduleId = parseInt(busId, 10);
+
+  const { data: schedule, isLoading: scheduleLoading } = useQuery({
+    queryKey: ['schedule', scheduleId],
+    queryFn: () => busesApi.getSchedule(scheduleId),
     enabled: !!busId,
   });
 
@@ -47,9 +48,14 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     enabled: !!selectedRouteId,
   });
 
-  const busData = Array.isArray(bus) ? bus[0] : bus;
   const routeData =
-    busData?.route_id && routes ? routes.find((r) => r.id === busData.route_id) : null;
+    schedule?.bus?.route?.id && routes ? routes.find((r) => r.id === schedule.bus.route.id) : null;
+
+  useEffect(() => {
+    if (routeData) {
+      setSelectedRouteId(routeData.id);
+    }
+  }, [routeData]);
 
   const selectedFare = farePrices?.find((f) => f.fare_type === selectedFareType);
   const totalPrice = selectedFare ? selectedFare.price_etb * quantity : 0;
@@ -71,22 +77,25 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     if (!selectedFareType || !routeData || !selectedRouteId) return;
 
     try {
+      const seatIds = selectedSeats.length > 0 ? selectedSeats.map((s) => parseInt(s, 10)) : [];
+
       const result = (await ticketsApi.bookTicket({
-        schedule_id: parseInt(busId, 10),
+        schedule_id: scheduleId,
         fare_type: selectedFareType,
         quantity,
         boarding_station_id: routeData.origin_station_id,
         destination_station_id: routeData.destination_station_id,
+        selected_seat_ids: seatIds,
       })) as { id: number; ticket_number: string };
 
       onBookingComplete(result.id.toString());
     } catch (error) {
       console.error('Booking failed:', error);
-      onBookingComplete('demo');
+      onBookingComplete('');
     }
   };
 
-  if (busLoading || routesLoading) {
+  if (scheduleLoading || routesLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -105,6 +114,15 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
 
       {bookingStep === 'fare-selection' && (
         <Card className="p-4">
+          {routeData && (
+            <div className="mb-4 p-3 bg-muted rounded-lg">
+              <p className="font-medium">{routeData.route_number}</p>
+              <p className="text-sm text-muted-foreground">
+                {schedule?.departure_time} • {schedule?.estimated_arrival_time}
+              </p>
+            </div>
+          )}
+
           <h3 className="font-medium mb-4">Select Fare Type</h3>
 
           {faresLoading ? (
@@ -137,7 +155,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">Select a route first</p>
+            <p className="text-muted-foreground">No fares available for this route</p>
           )}
 
           <div className="mt-4">
@@ -171,23 +189,44 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
       )}
 
       {bookingStep === 'seat-selection' && (
-        <Card className="p-4">
-          <h3 className="font-medium mb-4">Seat Selection</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Seat selection coming soon. Your seat will be assigned automatically.
-          </p>
-          <Button className="w-full" onClick={handleBooking}>
-            Confirm Booking ({totalPrice} ETB)
-          </Button>
-        </Card>
+        <SeatSelection
+          busId={schedule?.bus_id?.toString() || '1'}
+          scheduleId={busId}
+          requiredSeats={quantity}
+          onSeatsSelected={(seats) => {
+            setSelectedSeats(seats);
+            setBookingStep('payment-processing');
+          }}
+          onBack={() => setBookingStep('fare-selection')}
+        />
       )}
 
       {bookingStep === 'payment-processing' && (
         <Card className="p-4">
-          <h3 className="font-medium mb-4">Processing Payment</h3>
-          <p className="text-muted-foreground">Payment integration coming soon...</p>
-          <Button className="w-full mt-4" onClick={handleBooking}>
-            Confirm Booking
+          <h3 className="font-medium mb-4">Booking Summary</h3>
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Fare Type</span>
+              <span className="capitalize">{selectedFareType}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Passengers</span>
+              <span>{quantity}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Seats</span>
+              <span>{selectedSeats.length > 0 ? selectedSeats.join(', ') : 'Auto-assigned'}</span>
+            </div>
+            <div className="flex justify-between border-t pt-2 mt-2">
+              <span className="font-medium">Total</span>
+              <span className="font-medium text-lg">{totalPrice} ETB</span>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Pay on board • No online payment required
+          </p>
+          <Button className="w-full" onClick={handleBooking}>
+            Confirm Booking ({totalPrice} ETB)
           </Button>
         </Card>
       )}

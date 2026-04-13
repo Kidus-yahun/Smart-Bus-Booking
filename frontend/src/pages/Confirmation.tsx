@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Check, Clock, Download, Loader2, MapPin, QrCode, Users } from 'lucide-react';
+import QRCode from 'qrcode';
+import { useEffect, useRef } from 'react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -83,7 +85,16 @@ export function Confirmation({ ticketId, onNewBooking }: ConfirmationProps) {
 
           <div className="flex justify-center py-4">
             <div className="bg-white p-4 rounded-lg">
-              <QrCode className="w-32 h-32 text-black" />
+              <canvas
+                ref={(canvas) => {
+                  if (canvas) {
+                    QRCode.toCanvas(canvas, ticketDetails.ticket_number || ticketId, {
+                      width: 128,
+                      margin: 2,
+                    });
+                  }
+                }}
+              />
               <p className="text-xs text-center mt-2 font-mono">
                 {ticketDetails.ticket_number || ticketId}
               </p>

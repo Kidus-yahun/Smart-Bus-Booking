@@ -1,5 +1,6 @@
 import { ArrowLeft, Car } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { busesApi } from '../lib/api';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -69,51 +70,70 @@ export function SeatSelection({
     features: ['AC', 'WiFi', 'USB'],
   };
 
-  // Load seat data (simulated API call)
+  // Load seat data from API
   useEffect(() => {
     const loadSeatData = async () => {
       setIsLoading(true);
 
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        const busNum = parseInt(busId, 10);
+        const seatsData = await busesApi.getSeats(busNum);
 
-      // Generate realistic seat layout
-      const seatLayout: Seat[] = [];
-      const totalRows = Math.ceil(busInfo.capacity / 4); // 4 seats per row
+        // Handle wrapped response { bus_id, total_seats, rows, seats_per_row, seats: [...] }
+        const response = seatsData as {
+          seats: Array<{
+            seat_id: number;
+            seat_number: string;
+            row_number: number;
+            seat_position: string;
+            status: string;
+          }>;
+        };
 
-      for (let row = 1; row <= totalRows; row++) {
-        for (const position of ['A', 'B', 'C', 'D'] as const) {
-          // Skip some seats at the back for smaller buses
-          if (row * 4 + ['A', 'B', 'C', 'D'].indexOf(position) >= busInfo.capacity) {
-            continue;
+        // Transform API response to Seat format
+        const seatLayout: Seat[] = response.seats.map((seat) => ({
+          id: seat.seat_id.toString(),
+          number: seat.seat_number,
+          status: seat.status as SeatStatus,
+          row: seat.row_number,
+          column: seat.seat_position as Seat['column'],
+        }));
+
+        setSeats(seatLayout);
+      } catch (error) {
+        console.error('Failed to load seats:', error);
+
+        // Fallback to mock data if API fails
+        const seatLayout: Seat[] = [];
+        const totalRows = 12;
+
+        for (let row = 1; row <= totalRows; row++) {
+          for (const position of ['A', 'B', 'C', 'D'] as const) {
+            const seatNumber = `${row}${position}`;
+            let status: SeatStatus = 'available';
+
+            if (Math.random() > 0.75) {
+              status = 'occupied';
+            }
+
+            seatLayout.push({
+              id: seatNumber,
+              number: seatNumber,
+              status,
+              row,
+              column: position,
+            });
           }
-
-          const seatNumber = `${row}${position}`;
-          let status: SeatStatus = 'available';
-
-          // Simulate some occupied seats (more realistic distribution)
-          if (Math.random() > 0.75) {
-            status = 'occupied';
-          } else if (Math.random() > 0.95) {
-            status = 'reserved';
-          }
-
-          seatLayout.push({
-            id: seatNumber,
-            number: seatNumber,
-            status,
-            row,
-            column: position,
-          });
         }
-      }
 
-      setSeats(seatLayout);
-      setIsLoading(false);
+        setSeats(seatLayout);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadSeatData();
-  }, [busId, scheduleId, busInfo.capacity]);
+  }, [busId]);
 
   const handleSeatClick = (seatId: string) => {
     const seat = seats.find((s) => s.id === seatId);
