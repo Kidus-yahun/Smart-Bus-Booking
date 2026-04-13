@@ -1,19 +1,19 @@
-from sqlalchemy.orm import Session
+import random
+from datetime import UTC, datetime, timedelta
+
+from .auth import get_password_hash
 from .database import SessionLocal, engine
 from .models import (
     Base,
-    BusStation,
-    BusRoute,
     Bus,
+    BusRoute,
     BusSchedule,
+    BusStation,
     FarePrice,
+    Seat,
     User,
     UserRole,
-    Seat,
 )
-from .auth import get_password_hash
-from datetime import datetime, timedelta, timezone
-import random
 
 
 def create_ethiopian_bus_data():
@@ -262,7 +262,7 @@ def create_ethiopian_bus_data():
         db.commit()
 
         # Create bus schedules for the next few days
-        base_time = datetime.now(timezone.utc).replace(
+        base_time = datetime.now(UTC).replace(
             hour=6, minute=0, second=0, microsecond=0
         )
 

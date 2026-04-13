@@ -1,17 +1,17 @@
+import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card } from './ui/card';
-import { useAuth } from '../contexts/AuthContext';
-import { SmartBusLogo } from './SmartBusLogo';
+import { SmartBusLogo } from '../../components/SmartBusLogo';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
 }
 
-export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
+export function Login({ onSwitchToSignup }: LoginFormProps) {
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +34,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
     try {
       await login(email, password);
-    } catch (err) {
+    } catch (_err) {
       setError('Invalid email or password');
     }
   };
@@ -44,10 +44,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
       <Card className="w-full max-w-md p-6 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center mx-auto mb-4">
-            <SmartBusLogo 
-              size={80}
-              className=""
-            />
+            <SmartBusLogo size={80} className="" />
           </div>
           <h1 className="text-2xl font-medium">Welcome to SmartBus</h1>
           <p className="text-muted-foreground">🇪🇹 Sign in to book your bus tickets</p>
@@ -55,7 +52,9 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="block text-sm font-medium mb-1">Email</Label>
+            <Label htmlFor="email" className="block text-sm font-medium mb-1">
+              Email
+            </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -71,7 +70,9 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="block text-sm font-medium mb-1">Password</Label>
+            <Label htmlFor="password" className="block text-sm font-medium mb-1">
+              Password
+            </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -100,12 +101,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
             </div>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            size="lg"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -121,6 +117,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
             <button
+              type="button"
               onClick={onSwitchToSignup}
               className="text-primary hover:underline"
               disabled={isLoading}
@@ -132,7 +129,8 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
           <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-sm text-muted-foreground mb-2">Demo credentials:</p>
             <p className="text-xs text-muted-foreground">
-              Email: demo@smartbus.com<br />
+              Email: demo@smartbus.com
+              <br />
               Password: demo123
             </p>
           </div>

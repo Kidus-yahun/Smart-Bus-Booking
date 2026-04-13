@@ -1,47 +1,49 @@
+import enum
+
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
     Integer,
     String,
-    Float,
-    DateTime,
-    Boolean,
-    ForeignKey,
     Text,
-    Enum,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from .database import Base
-import enum
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     PASSENGER = "passenger"
     DRIVER = "driver"
     ADMIN = "admin"
 
 
-class BusStatus(str, enum.Enum):
+class BusStatus(enum.StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     MAINTENANCE = "maintenance"
 
 
-class TicketStatus(str, enum.Enum):
+class TicketStatus(enum.StrEnum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
     CANCELLED = "cancelled"
     USED = "used"
 
 
-class PaymentStatus(str, enum.Enum):
+class PaymentStatus(enum.StrEnum):
     PENDING = "pending"
     COMPLETED = "completed"
     FAILED = "failed"
     REFUNDED = "refunded"
 
 
-class FareType(str, enum.Enum):
+class FareType(enum.StrEnum):
     ADULT = "adult"
     SENIOR = "senior"
     STUDENT = "student"

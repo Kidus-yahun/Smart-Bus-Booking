@@ -1,17 +1,17 @@
+import { Eye, EyeOff, Loader2, Lock, Mail, User } from 'lucide-react';
 import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card } from './ui/card';
-import { useAuth } from '../contexts/AuthContext';
-import { SmartBusLogo } from './SmartBusLogo';
+import { SmartBusLogo } from '../../components/SmartBusLogo';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
 }
 
-export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
+export function Register({ onSwitchToLogin }: SignupFormProps) {
   const { signup, isLoading } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -42,7 +42,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
 
     try {
       await signup(email, password, name);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to create account. Please try again.');
     }
   };
@@ -52,10 +52,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
       <Card className="w-full max-w-md p-6 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center mx-auto mb-4">
-            <SmartBusLogo 
-              size={80}
-              className=""
-            />
+            <SmartBusLogo size={80} className="" />
           </div>
           <h1 className="text-2xl font-medium">Join SmartBus</h1>
           <p className="text-muted-foreground">🇪🇹 Create your account to get started</p>
@@ -63,7 +60,9 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="block text-sm font-medium mb-1">Full Name</Label>
+            <Label htmlFor="name" className="block text-sm font-medium mb-1">
+              Full Name
+            </Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -79,7 +78,9 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="block text-sm font-medium mb-1">Email</Label>
+            <Label htmlFor="email" className="block text-sm font-medium mb-1">
+              Email
+            </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -95,7 +96,9 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="block text-sm font-medium mb-1">Password</Label>
+            <Label htmlFor="password" className="block text-sm font-medium mb-1">
+              Password
+            </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -119,7 +122,9 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
+              Confirm Password
+            </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
@@ -148,12 +153,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
             </div>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            size="lg"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -181,9 +181,8 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         <div className="text-xs text-muted-foreground text-center space-y-1">
           <p>By creating an account, you agree to our</p>
           <p>
-            <span className="text-primary hover:underline cursor-pointer">Terms of Service</span>
-            {' '}and{' '}
-            <span className="text-primary hover:underline cursor-pointer">Privacy Policy</span>
+            <span className="text-primary hover:underline cursor-pointer">Terms of Service</span>{' '}
+            and <span className="text-primary hover:underline cursor-pointer">Privacy Policy</span>
           </p>
         </div>
       </Card>

@@ -5,15 +5,15 @@
   .safe-area-top {
     padding-top: max(1rem, env(safe-area-inset-top));
   }
-  
+
   .safe-area-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
-  
+
   .safe-area-left {
     padding-left: max(1rem, env(safe-area-inset-left));
   }
-  
+
   .safe-area-right {
     padding-right: max(1rem, env(safe-area-inset-right));
   }
@@ -29,12 +29,12 @@ input[type="text"],
 input[type="url"],
 select,
 textarea {
-  font-size: 16px !important;
+  font-size: 16px;
 }
 
 /* Ensure labels are properly displayed above inputs */
 label[data-slot="label"] {
-  display: block !important;
+  display: block;
   margin-bottom: 0.5rem;
 }
 
@@ -54,28 +54,28 @@ label[data-slot="label"] {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
-  
+
   /* Container margins */
   .mobile-container {
     padding-left: 1rem;
     padding-right: 1rem;
     max-width: 100%;
   }
-  
+
   /* Card spacing */
   .mobile-card {
     margin-bottom: 1rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   }
-  
+
   /* Button adjustments */
   .mobile-button {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     min-height: 44px;
   }
-  
+
   /* Map container */
   .mobile-map {
     height: 250px;
@@ -85,23 +85,23 @@ label[data-slot="label"] {
     display: block;
     width: 100%;
   }
-  
+
   /* List items */
   .mobile-list-item {
     padding: 1rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
-  
+
   .mobile-list-item:last-child {
     border-bottom: none;
   }
-  
+
   /* Seat selection grid */
   .mobile-seat-grid {
     gap: 0.5rem;
     padding: 1rem;
   }
-  
+
   .mobile-seat {
     min-width: 40px;
     min-height: 40px;
@@ -114,7 +114,7 @@ label[data-slot="label"] {
   .mobile-map {
     height: 200px;
   }
-  
+
   .mobile-container {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

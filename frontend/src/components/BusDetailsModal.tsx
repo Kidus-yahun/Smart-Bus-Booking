@@ -1,9 +1,8 @@
+import { Bus, Clock, MapPin, Navigation, Star, Users, X } from 'lucide-react';
 import { useEffect } from 'react';
-import { X, MapPin, Clock, Users, Star, Wifi, Zap, Phone, Navigation, Bus } from 'lucide-react';
+import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
 
 interface BusDetails {
   id: string;
@@ -64,7 +63,7 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
       ac: '❄️',
       charging: '🔌',
       toilet: '🚻',
-      entertainment: '📺'
+      entertainment: '📺',
     };
     return icons[amenity] || '✅';
   };
@@ -82,7 +81,10 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
   return (
     <div className="fixed inset-0 bg-black/50 z-[100] flex items-end" onClick={onClose}>
-      <div className="bg-background w-full max-h-[90vh] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="bg-background w-full max-h-[90vh] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="bg-primary text-primary-foreground p-4">
           <div className="flex items-center justify-between mb-3">
@@ -108,7 +110,10 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
               {busDetails.busType.charAt(0).toUpperCase() + busDetails.busType.slice(1)}
             </Badge>
             {busDetails.accessibility && (
-              <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground">
+              <Badge
+                variant="secondary"
+                className="bg-primary-foreground/20 text-primary-foreground"
+              >
                 ♿ Accessible
               </Badge>
             )}
@@ -144,7 +149,9 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-green-600" />
-                  <span className="text-sm text-green-600">ETA: {busDetails.estimatedArrival} min</span>
+                  <span className="text-sm text-green-600">
+                    ETA: {busDetails.estimatedArrival} min
+                  </span>
                 </div>
               </div>
             </div>
@@ -156,20 +163,20 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Users className={`w-4 h-4 ${getOccupancyColor()}`} />
-                <span className={`font-medium ${getOccupancyColor()}`}>
-                  {getOccupancyLabel()}
-                </span>
+                <span className={`font-medium ${getOccupancyColor()}`}>{getOccupancyLabel()}</span>
               </div>
               <span className="text-sm text-muted-foreground">
                 {busDetails.currentOccupancy}/{busDetails.capacity} passengers
               </span>
             </div>
             <div className="w-full bg-muted rounded-full h-2">
-              <div 
+              <div
                 className={`h-2 rounded-full ${
-                  busDetails.currentOccupancy / busDetails.capacity < 0.5 ? 'bg-green-500' :
-                  busDetails.currentOccupancy / busDetails.capacity < 0.8 ? 'bg-yellow-500' :
-                  'bg-red-500'
+                  busDetails.currentOccupancy / busDetails.capacity < 0.5
+                    ? 'bg-green-500'
+                    : busDetails.currentOccupancy / busDetails.capacity < 0.8
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
                 }`}
                 style={{ width: `${(busDetails.currentOccupancy / busDetails.capacity) * 100}%` }}
               />
@@ -183,8 +190,12 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
               {busDetails.nextStops.map((stop, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-primary' : 'bg-muted-foreground'}`} />
-                    <span className={`text-sm ${index === 0 ? 'font-medium' : ''}`}>{stop.name}</span>
+                    <div
+                      className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-primary' : 'bg-muted-foreground'}`}
+                    />
+                    <span className={`text-sm ${index === 0 ? 'font-medium' : ''}`}>
+                      {stop.name}
+                    </span>
                   </div>
                   <span className="text-sm text-muted-foreground">{stop.eta}</span>
                 </div>
@@ -199,7 +210,9 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
               {busDetails.amenities.map((amenity) => (
                 <div key={amenity} className="flex items-center gap-2">
                   <span className="text-lg">{getAmenityIcon(amenity)}</span>
-                  <span className="text-sm capitalize">{amenity === 'ac' ? 'Air Conditioning' : amenity}</span>
+                  <span className="text-sm capitalize">
+                    {amenity === 'ac' ? 'Air Conditioning' : amenity}
+                  </span>
                 </div>
               ))}
             </div>
@@ -211,7 +224,9 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">{busDetails.driverInfo.name}</div>
-                <div className="text-sm text-muted-foreground">{busDetails.driverInfo.experience} experience</div>
+                <div className="text-sm text-muted-foreground">
+                  {busDetails.driverInfo.experience} experience
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />

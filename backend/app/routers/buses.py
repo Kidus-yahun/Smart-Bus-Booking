@@ -1,35 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_
-from typing import List, Optional
-from datetime import datetime, timedelta
-import random
 import math
+import random
+from datetime import datetime, timedelta
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_
+from sqlalchemy.orm import Session, joinedload
+
+from ..auth import require_role
 from ..database import get_db
 from ..models import (
-    BusStation, BusRoute, Bus, BusSchedule, RouteStop, User, UserRole, Seat, SeatReservation
+    Bus,
+    BusRoute,
+    BusSchedule,
+    BusStation,
+    Seat,
+    SeatReservation,
+    User,
+    UserRole,
 )
+from ..schemas import Bus as BusSchema
 from ..schemas import (
-    BusStation as BusStationSchema,
-    BusRoute as BusRouteSchema,
-    Bus as BusSchema,
-    BusSchedule as BusScheduleSchema,
     BusArrival,
-    MapStation,
-    MapResponse,
-    BusStationCreate,
-    BusRouteCreate,
     BusCreate,
+    BusRouteCreate,
     BusScheduleCreate,
-    BusUpdate,
     BusScheduleUpdate,
-    SeatLayout,
+    BusStationCreate,
+    BusUpdate,
+    MapResponse,
+    MapStation,
     SeatAvailability,
-    Seat as SeatSchema,
-    SeatCreate
+    SeatLayout,
 )
-from ..auth import get_current_user, require_role
+from ..schemas import BusRoute as BusRouteSchema
+from ..schemas import BusSchedule as BusScheduleSchema
+from ..schemas import BusStation as BusStationSchema
+from ..schemas import Seat as SeatSchema
 
 router = APIRouter()
 
@@ -37,34 +43,34 @@ router = APIRouter()
 def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Calculate distance between two points in kilometers."""
     R = 6371  # Earth's radius in kilometers
-    
+
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
-    
+
     a = (math.sin(dlat/2) * math.sin(dlat/2) +
          math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
          math.sin(dlon/2) * math.sin(dlon/2))
-    
+
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     distance = R * c
-    
+
     return distance
 
-@router.get("/stations", response_model=List[BusStationSchema])
+@router.get("/stations", response_model=list[BusStationSchema])
 async def get_bus_stations(
-    city: Optional[str] = "Addis Ababa",
+    city: str | None = "Addis Ababa",
     active_only: bool = True,
     db: Session = Depends(get_db)
 ):
     """Get all bus stations."""
     query = db.query(BusStation)
-    
+
     if city:
         query = query.filter(BusStation.city == city)
-    
+
     if active_only:
-        query = query.filter(BusStation.is_active == True)
-    
+        query = query.filter(BusStation.is_active)
+
     stations = query.all()
     return stations
 
@@ -89,7 +95,7 @@ async def create_bus_station(
     db.refresh(db_station)
     return db_station
 
-@router.get("/routes", response_model=List[BusRouteSchema])
+@router.get("/routes", response_model=list[BusRouteSchema])
 async def get_bus_routes(
     active_only: bool = True,
     db: Session = Depends(get_db)
@@ -99,10 +105,10 @@ async def get_bus_routes(
         joinedload(BusRoute.origin_station),
         joinedload(BusRoute.destination_station)
     )
-    
+
     if active_only:
-        query = query.filter(BusRoute.is_active == True)
-    
+        query = query.filter(BusRoute.is_active)
+
     routes = query.all()
     return routes
 
@@ -113,7 +119,7 @@ async def get_bus_route(route_id: int, db: Session = Depends(get_db)):
         joinedload(BusRoute.origin_station),
         joinedload(BusRoute.destination_station)
     ).filter(BusRoute.id == route_id).first()
-    
+
     if not route:
         raise HTTPException(status_code=404, detail="Route not found")
     return route
@@ -128,31 +134,31 @@ async def create_bus_route(
     # Verify stations exist
     origin = db.query(BusStation).filter(BusStation.id == route_data.origin_station_id).first()
     destination = db.query(BusStation).filter(BusStation.id == route_data.destination_station_id).first()
-    
+
     if not origin or not destination:
         raise HTTPException(status_code=400, detail="Invalid station IDs")
-    
+
     db_route = BusRoute(**route_data.dict())
     db.add(db_route)
     db.commit()
     db.refresh(db_route)
     return db_route
 
-@router.get("/", response_model=List[BusSchema])
+@router.get("/", response_model=list[BusSchema])
 async def get_buses(
-    route_id: Optional[int] = None,
+    route_id: int | None = None,
     active_only: bool = True,
     db: Session = Depends(get_db)
 ):
     """Get all buses."""
     query = db.query(Bus).options(joinedload(Bus.route))
-    
+
     if route_id:
         query = query.filter(Bus.route_id == route_id)
-    
+
     if active_only:
         query = query.filter(Bus.status == "active")
-    
+
     buses = query.all()
     return buses
 
@@ -175,7 +181,7 @@ async def create_bus(
     route = db.query(BusRoute).filter(BusRoute.id == bus_data.route_id).first()
     if not route:
         raise HTTPException(status_code=400, detail="Invalid route ID")
-    
+
     db_bus = Bus(**bus_data.dict())
     db.add(db_bus)
     db.commit()
@@ -193,42 +199,42 @@ async def update_bus(
     bus = db.query(Bus).filter(Bus.id == bus_id).first()
     if not bus:
         raise HTTPException(status_code=404, detail="Bus not found")
-    
+
     # Update fields
     for field, value in bus_data.dict(exclude_unset=True).items():
         setattr(bus, field, value)
-    
+
     bus.last_updated = datetime.utcnow()
     db.commit()
     db.refresh(bus)
     return bus
 
-@router.get("/schedules/upcoming", response_model=List[BusArrival])
+@router.get("/schedules/upcoming", response_model=list[BusArrival])
 async def get_upcoming_arrivals(
-    station_id: Optional[int] = None,
+    station_id: int | None = None,
     limit: int = Query(10, le=50),
     db: Session = Depends(get_db)
 ):
     """Get upcoming bus arrivals for a station."""
     now = datetime.utcnow()
-    
+
     # Get schedules for the next few hours
     query = db.query(BusSchedule).options(
         joinedload(BusSchedule.bus).joinedload(Bus.route).joinedload(BusRoute.destination_station)
     ).filter(
         BusSchedule.departure_time >= now,
         BusSchedule.departure_time <= now + timedelta(hours=4),
-        BusSchedule.is_cancelled == False
+        not BusSchedule.is_cancelled
     )
-    
+
     schedules = query.order_by(BusSchedule.departure_time).limit(limit).all()
-    
+
     arrivals = []
     for schedule in schedules:
         # Calculate minutes away
         time_diff = schedule.departure_time - now
         minutes_away = max(0, int(time_diff.total_seconds() / 60))
-        
+
         # Determine occupancy level
         occupancy_ratio = schedule.current_occupancy / schedule.bus.capacity if schedule.bus.capacity > 0 else 0
         if occupancy_ratio < 0.3:
@@ -237,7 +243,7 @@ async def get_upcoming_arrivals(
             occupancy = "medium"
         else:
             occupancy = "high"
-        
+
         arrival = BusArrival(
             id=str(schedule.id),
             route_number=schedule.bus.route.route_number,
@@ -250,19 +256,19 @@ async def get_upcoming_arrivals(
             schedule_id=schedule.id
         )
         arrivals.append(arrival)
-    
+
     return arrivals
 
 @router.get("/map/stations", response_model=MapResponse)
 async def get_map_stations(
-    user_lat: Optional[float] = None,
-    user_lng: Optional[float] = None,
+    user_lat: float | None = None,
+    user_lng: float | None = None,
     radius_km: float = Query(10, le=50),
     db: Session = Depends(get_db)
 ):
     """Get bus stations for map display."""
-    stations = db.query(BusStation).filter(BusStation.is_active == True).all()
-    
+    stations = db.query(BusStation).filter(BusStation.is_active).all()
+
     map_stations = []
     for station in stations:
         # Calculate distance if user location provided
@@ -271,10 +277,10 @@ async def get_map_stations(
             distance_km = calculate_distance(user_lat, user_lng, station.latitude, station.longitude)
             if distance_km > radius_km:
                 continue
-        
+
         # Count active buses near this station (mock data for now)
         active_buses = random.randint(1, 6)
-        
+
         map_station = MapStation(
             id=str(station.id),
             name=station.name,
@@ -284,7 +290,7 @@ async def get_map_stations(
             active_buses=active_buses
         )
         map_stations.append(map_station)
-    
+
     return MapResponse(
         stations=map_stations,
         user_location={"lat": user_lat, "lng": user_lng} if user_lat and user_lng else None
@@ -301,7 +307,7 @@ async def create_bus_schedule(
     bus = db.query(Bus).filter(Bus.id == schedule_data.bus_id).first()
     if not bus:
         raise HTTPException(status_code=400, detail="Invalid bus ID")
-    
+
     db_schedule = BusSchedule(**schedule_data.dict())
     db.add(db_schedule)
     db.commit()
@@ -319,11 +325,11 @@ async def update_bus_schedule(
     schedule = db.query(BusSchedule).filter(BusSchedule.id == schedule_id).first()
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
-    
+
     # Update fields
     for field, value in schedule_data.dict(exclude_unset=True).items():
         setattr(schedule, field, value)
-    
+
     db.commit()
     db.refresh(schedule)
     return schedule
@@ -334,7 +340,7 @@ async def get_bus_schedule(schedule_id: int, db: Session = Depends(get_db)):
     schedule = db.query(BusSchedule).options(
         joinedload(BusSchedule.bus).joinedload(Bus.route)
     ).filter(BusSchedule.id == schedule_id).first()
-    
+
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
     return schedule
@@ -342,26 +348,26 @@ async def get_bus_schedule(schedule_id: int, db: Session = Depends(get_db)):
 @router.get("/{bus_id}/seats", response_model=SeatLayout)
 async def get_bus_seat_layout(
     bus_id: int,
-    schedule_id: Optional[int] = None,
+    schedule_id: int | None = None,
     db: Session = Depends(get_db)
 ):
     """Get seat layout for a specific bus."""
     bus = db.query(Bus).filter(Bus.id == bus_id).first()
     if not bus:
         raise HTTPException(status_code=404, detail="Bus not found")
-    
+
     # Get all seats for this bus
     seats = db.query(Seat).filter(Seat.bus_id == bus_id).all()
-    
+
     # If no seats exist, create default layout
     if not seats:
         seats = create_default_bus_seats(db, bus_id, bus.capacity)
-    
+
     # Check seat availability for specific schedule
     seat_availability = []
     for seat in seats:
         status = "available"
-        
+
         if schedule_id:
             # Check if seat is reserved for this schedule
             reservation = db.query(SeatReservation).filter(
@@ -371,13 +377,13 @@ async def get_bus_seat_layout(
                     SeatReservation.status.in_(["reserved", "confirmed"])
                 )
             ).first()
-            
+
             if reservation:
                 status = "occupied" if reservation.status == "confirmed" else "reserved"
-        
+
         if not seat.is_available:
             status = "occupied"
-        
+
         seat_availability.append(SeatAvailability(
             seat_id=seat.id,
             seat_number=seat.seat_number,
@@ -385,11 +391,11 @@ async def get_bus_seat_layout(
             seat_position=seat.seat_position,
             status=status
         ))
-    
+
     # Calculate layout info
     max_row = max(seat.row_number for seat in seats) if seats else 0
     seats_per_row = 4  # Standard bus layout: A, B, C, D
-    
+
     return SeatLayout(
         bus_id=bus_id,
         total_seats=len(seats),
@@ -398,7 +404,7 @@ async def get_bus_seat_layout(
         seats=seat_availability
     )
 
-@router.post("/{bus_id}/seats", response_model=List[SeatSchema])
+@router.post("/{bus_id}/seats", response_model=list[SeatSchema])
 async def create_bus_seats(
     bus_id: int,
     current_user: User = Depends(require_role([UserRole.ADMIN])),
@@ -408,20 +414,20 @@ async def create_bus_seats(
     bus = db.query(Bus).filter(Bus.id == bus_id).first()
     if not bus:
         raise HTTPException(status_code=404, detail="Bus not found")
-    
+
     # Check if seats already exist
     existing_seats = db.query(Seat).filter(Seat.bus_id == bus_id).first()
     if existing_seats:
         raise HTTPException(status_code=400, detail="Seats already exist for this bus")
-    
+
     seats = create_default_bus_seats(db, bus_id, bus.capacity)
     return seats
 
-def create_default_bus_seats(db: Session, bus_id: int, capacity: int) -> List[Seat]:
+def create_default_bus_seats(db: Session, bus_id: int, capacity: int) -> list[Seat]:
     """Create default seat layout for a bus."""
     seats = []
     rows = capacity // 4  # 4 seats per row (A, B, C, D)
-    
+
     for row in range(1, rows + 1):
         for position in ['A', 'B', 'C', 'D']:
             seat_number = f"{row}{position}"
@@ -434,10 +440,10 @@ def create_default_bus_seats(db: Session, bus_id: int, capacity: int) -> List[Se
             )
             db.add(seat)
             seats.append(seat)
-    
+
     db.commit()
-    
+
     for seat in seats:
         db.refresh(seat)
-    
+
     return seats

@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, User, LoginData, RegisterData } from '../lib/api';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { authApi, type LoginData, type RegisterData, type User } from '../lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -19,7 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('smartbus_token');
     if (token) {
-      authApi.getMe()
+      authApi
+        .getMe()
         .then(setUser)
         .catch(() => {
           authApi.logout();
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('smartbus_user');
   };
 
-  const updateProfile = async (data: Partial<User>) => {
+  const updateProfile = async (_data: Partial<User>) => {
     if (!user) throw new Error('No user logged in');
     setIsLoading(true);
     try {
@@ -76,14 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signup,
     logout,
     updateProfile,
-    isLoading
+    isLoading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

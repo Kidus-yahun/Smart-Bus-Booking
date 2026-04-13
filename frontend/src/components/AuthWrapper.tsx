@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { LoginForm } from './LoginForm';
-import { SignupForm } from './SignupForm';
+import { Login } from '../pages/Auth/Login';
+import { Register } from '../pages/Auth/Register';
 
 type AuthMode = 'login' | 'signup';
 
@@ -10,9 +10,9 @@ export function AuthWrapper() {
   return (
     <>
       {authMode === 'login' ? (
-        <LoginForm onSwitchToSignup={() => setAuthMode('signup')} />
+        <Login onSwitchToSignup={() => setAuthMode('signup')} />
       ) : (
-        <SignupForm onSwitchToLogin={() => setAuthMode('login')} />
+        <Register onSwitchToLogin={() => setAuthMode('login')} />
       )}
     </>
   );

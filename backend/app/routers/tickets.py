@@ -1,43 +1,44 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_
-from typing import List, Optional
-from datetime import datetime, timedelta
-import uuid
-import qrcode
-import io
 import base64
+import io
 import random
 import string
+import uuid
+from datetime import datetime, timedelta
 
+import qrcode
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import and_
+from sqlalchemy.orm import Session, joinedload
+
+from ..auth import get_current_user, require_role
 from ..database import get_db
 from ..models import (
-    User,
-    UserRole,
-    Ticket,
-    BusSchedule,
     Bus,
-    BusRoute,
-    BusStation,
-    Payment,
+    BusSchedule,
     FarePrice,
-    TicketStatus,
-    PaymentStatus,
     FareType,
+    Payment,
+    PaymentStatus,
     Seat,
     SeatReservation,
+    Ticket,
+    TicketStatus,
+    User,
+    UserRole,
 )
 from ..schemas import (
-    TicketCreate,
-    Ticket as TicketSchema,
-    TicketDetail,
-    PaymentCreate,
-    Payment as PaymentSchema,
     FarePrice as FarePriceSchema,
-    TicketCreateWithSeats,
-    SeatReservation as SeatReservationSchema,
 )
-from ..auth import get_current_user, require_role
+from ..schemas import (
+    Payment as PaymentSchema,
+)
+from ..schemas import (
+    Ticket as TicketSchema,
+)
+from ..schemas import (
+    TicketCreateWithSeats,
+    TicketDetail,
+)
 
 router = APIRouter()
 
@@ -147,7 +148,7 @@ async def book_ticket(
             and_(
                 FarePrice.route_id == schedule.bus.route_id,
                 FarePrice.fare_type == ticket_data.fare_type,
-                FarePrice.is_active == True,
+                FarePrice.is_active,
             )
         )
         .first()
@@ -291,7 +292,7 @@ async def process_payment(
         raise HTTPException(status_code=400, detail="Payment processing failed")
 
 
-@router.get("/my-tickets", response_model=List[TicketDetail])
+@router.get("/my-tickets", response_model=list[TicketDetail])
 async def get_my_tickets(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -398,12 +399,12 @@ async def cancel_ticket(
     return ticket
 
 
-@router.get("/fares/routes/{route_id}", response_model=List[FarePriceSchema])
+@router.get("/fares/routes/{route_id}", response_model=list[FarePriceSchema])
 async def get_route_fares(route_id: int, db: Session = Depends(get_db)):
     """Get fare prices for a specific route."""
     fares = (
         db.query(FarePrice)
-        .filter(and_(FarePrice.route_id == route_id, FarePrice.is_active == True))
+        .filter(and_(FarePrice.route_id == route_id, FarePrice.is_active))
         .all()
     )
 
@@ -448,7 +449,7 @@ async def validate_ticket(
 
 @router.post("/reserve-seats")
 async def reserve_seats_temporarily(
-    seat_ids: List[int],
+    seat_ids: list[int],
     schedule_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),

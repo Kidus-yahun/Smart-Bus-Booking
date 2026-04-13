@@ -1,9 +1,26 @@
+import {
+  ArrowLeft,
+  Bell,
+  ChevronRight,
+  Globe,
+  HelpCircle,
+  Info,
+  Moon,
+  Phone,
+  Shield,
+  Sun,
+} from 'lucide-react';
 import { useState } from 'react';
-import { ArrowLeft, Bell, Moon, Sun, Globe, Shield, HelpCircle, Info, ChevronRight, Phone } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card } from './ui/card';
-import { Switch } from './ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { Switch } from '../components/ui/switch';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface SettingsProps {
@@ -17,43 +34,39 @@ export function Settings({ onBack }: SettingsProps) {
     email: true,
     sms: false,
     busUpdates: true,
-    promotions: false
+    promotions: false,
   });
   const [language, setLanguage] = useState('en');
 
   const handleNotificationChange = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({
+    setNotifications((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
-  const SettingsItem = ({ 
-    icon, 
-    title, 
-    description, 
+  const SettingsItem = ({
+    icon,
+    title,
+    description,
     children,
-    onClick 
-  }: { 
+    onClick,
+  }: {
     icon: React.ReactNode;
     title: string;
     description?: string;
     children?: React.ReactNode;
     onClick?: () => void;
   }) => (
-    <div 
+    <div
       className={`flex items-center justify-between p-4 ${onClick ? 'cursor-pointer hover:bg-muted/50' : ''}`}
       onClick={onClick}
     >
       <div className="flex items-center gap-3">
-        <div className="text-muted-foreground">
-          {icon}
-        </div>
+        <div className="text-muted-foreground">{icon}</div>
         <div>
           <div className="font-medium">{title}</div>
-          {description && (
-            <div className="text-sm text-muted-foreground">{description}</div>
-          )}
+          {description && <div className="text-sm text-muted-foreground">{description}</div>}
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -92,10 +105,7 @@ export function Settings({ onBack }: SettingsProps) {
             title="Theme"
             description={`Currently using ${theme} mode`}
           >
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={toggleTheme}
-            />
+            <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
           </SettingsItem>
           <SettingsItem
             icon={<Globe className="w-5 h-5" />}

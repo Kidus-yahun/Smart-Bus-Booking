@@ -3,7 +3,7 @@ interface SmartBusLogoProps {
   size?: number;
 }
 
-export function SmartBusLogo({ className = "", size = 32 }: SmartBusLogoProps) {
+export function SmartBusLogo({ className = '', size = 32 }: SmartBusLogoProps) {
   return (
     <svg
       width={size}
@@ -23,7 +23,7 @@ export function SmartBusLogo({ className = "", size = 32 }: SmartBusLogoProps) {
         fill="currentColor"
         className="text-primary"
       />
-      
+
       {/* Bus windows */}
       <rect
         x="12"
@@ -52,7 +52,7 @@ export function SmartBusLogo({ className = "", size = 32 }: SmartBusLogoProps) {
         fill="currentColor"
         className="text-background"
       />
-      
+
       {/* Bus door */}
       <rect
         x="12"
@@ -63,64 +63,22 @@ export function SmartBusLogo({ className = "", size = 32 }: SmartBusLogoProps) {
         fill="currentColor"
         className="text-background"
       />
-      
+
       {/* Door handle */}
-      <circle
-        cx="18"
-        cy="38"
-        r="1"
-        fill="currentColor"
-        className="text-primary"
-      />
-      
+      <circle cx="18" cy="38" r="1" fill="currentColor" className="text-primary" />
+
       {/* Front lights */}
-      <circle
-        cx="52"
-        cy="24"
-        r="2"
-        fill="currentColor"
-        className="text-accent"
-      />
-      <circle
-        cx="52"
-        cy="32"
-        r="2"
-        fill="currentColor"
-        className="text-accent"
-      />
-      
+      <circle cx="52" cy="24" r="2" fill="currentColor" className="text-accent" />
+      <circle cx="52" cy="32" r="2" fill="currentColor" className="text-accent" />
+
       {/* Wheels */}
-      <circle
-        cx="16"
-        cy="50"
-        r="6"
-        fill="currentColor"
-        className="text-muted-foreground"
-      />
-      <circle
-        cx="48"
-        cy="50"
-        r="6"
-        fill="currentColor"
-        className="text-muted-foreground"
-      />
-      
+      <circle cx="16" cy="50" r="6" fill="currentColor" className="text-muted-foreground" />
+      <circle cx="48" cy="50" r="6" fill="currentColor" className="text-muted-foreground" />
+
       {/* Wheel centers */}
-      <circle
-        cx="16"
-        cy="50"
-        r="3"
-        fill="currentColor"
-        className="text-muted"
-      />
-      <circle
-        cx="48"
-        cy="50"
-        r="3"
-        fill="currentColor"
-        className="text-muted"
-      />
-      
+      <circle cx="16" cy="50" r="3" fill="currentColor" className="text-muted" />
+      <circle cx="48" cy="50" r="3" fill="currentColor" className="text-muted" />
+
       {/* Smart tech indicator - WiFi symbol */}
       <path
         d="M32 12C36.4 12 40.4 13.6 43.6 16.4L42.2 17.8C39.4 15.4 35.8 14 32 14C28.2 14 24.6 15.4 21.8 17.8L20.4 16.4C23.6 13.6 27.6 12 32 12Z"
@@ -132,13 +90,7 @@ export function SmartBusLogo({ className = "", size = 32 }: SmartBusLogoProps) {
         fill="currentColor"
         className="text-primary opacity-60"
       />
-      <circle
-        cx="32"
-        cy="15"
-        r="1.5"
-        fill="currentColor"
-        className="text-primary"
-      />
+      <circle cx="32" cy="15" r="1.5" fill="currentColor" className="text-primary" />
     </svg>
   );
 }

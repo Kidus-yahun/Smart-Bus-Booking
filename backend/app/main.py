@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException
+import os
+
+import uvicorn
+from dotenv import load_dotenv
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
-import uvicorn
-from .database import engine, get_db
+
+from .database import engine
 from .models import Base
-from .routers import auth, buses, tickets, demo
-from .auth import get_current_user
-import os
-from dotenv import load_dotenv
+from .routers import auth, buses, demo, tickets
 
 load_dotenv()
 

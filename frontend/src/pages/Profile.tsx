@@ -1,18 +1,18 @@
+import { ArrowLeft, Camera, Edit3, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
 import { useState } from 'react';
-import { ArrowLeft, Camera, Edit3, Save, X, User, Mail, Phone, MapPin } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card } from './ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { SmartBusLogo } from '../components/SmartBusLogo';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
-import { SmartBusLogo } from './SmartBusLogo';
 
 interface UserProfileProps {
   onBack: () => void;
 }
 
-export function UserProfile({ onBack }: UserProfileProps) {
+export function Profile({ onBack }: UserProfileProps) {
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,13 +20,13 @@ export function UserProfile({ onBack }: UserProfileProps) {
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '+251-9-00-000-000',
-    location: user?.location || 'Addis Ababa, Ethiopia'
+    location: user?.location || 'Addis Ababa, Ethiopia',
   });
 
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(word => word.charAt(0))
+      .map((word) => word.charAt(0))
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -34,7 +34,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
 
   const handleSave = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       await updateProfile(formData);
@@ -51,7 +51,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
       name: user?.name || '',
       email: user?.email || '',
       phone: user?.phone || '+251-9-00-000-000',
-      location: user?.location || 'Addis Ababa, Ethiopia'
+      location: user?.location || 'Addis Ababa, Ethiopia',
     });
     setIsEditing(false);
   };
@@ -79,9 +79,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
           <div className="relative">
             <Avatar className="w-20 h-20">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="text-lg">
-                {getInitials(user.name)}
-              </AvatarFallback>
+              <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
             </Avatar>
             <Button
               size="icon"
@@ -90,7 +88,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
               <Camera className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="flex-1">
             <h2 className="text-xl font-medium">{user.name}</h2>
             <p className="text-primary-foreground/80">SmartBus Member</p>
@@ -119,12 +117,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
               </Button>
             ) : (
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                  disabled={isLoading}
-                >
+                <Button variant="outline" size="sm" onClick={handleCancel} disabled={isLoading}>
                   <X className="w-4 h-4" />
                 </Button>
                 <Button
@@ -148,7 +141,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   className="pl-10"
                   disabled={!isEditing || isLoading}
                 />
@@ -163,7 +156,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                   className="pl-10"
                   disabled={!isEditing || isLoading}
                 />
@@ -178,7 +171,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                   className="pl-10"
                   disabled={!isEditing || isLoading}
                 />
@@ -192,7 +185,7 @@ export function UserProfile({ onBack }: UserProfileProps) {
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
                   className="pl-10"
                   disabled={!isEditing || isLoading}
                 />

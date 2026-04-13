@@ -1,13 +1,15 @@
-from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
-from typing import Optional, List
-from .models import UserRole, BusStatus, TicketStatus, PaymentStatus, FareType
+
+from pydantic import BaseModel, EmailStr
+
+from .models import BusStatus, FareType, PaymentStatus, TicketStatus, UserRole
+
 
 # User schemas
 class UserBase(BaseModel):
     email: EmailStr
     name: str
-    phone: Optional[str] = None
+    phone: str | None = None
 
 class UserCreate(UserBase):
     password: str
@@ -26,8 +28,8 @@ class User(UserBase):
         from_attributes = True
 
 class UserProfile(User):
-    total_trips: Optional[int] = 0
-    last_trip_date: Optional[datetime] = None
+    total_trips: int | None = 0
+    last_trip_date: datetime | None = None
 
 # Auth schemas
 class Token(BaseModel):
@@ -36,7 +38,7 @@ class Token(BaseModel):
     user: User
 
 class TokenData(BaseModel):
-    email: Optional[str] = None
+    email: str | None = None
 
 # Bus Station schemas
 class BusStationBase(BaseModel):
@@ -46,7 +48,7 @@ class BusStationBase(BaseModel):
     longitude: float
     city: str = "Addis Ababa"
     region: str = "Addis Ababa"
-    facilities: Optional[str] = None
+    facilities: str | None = None
 
 class BusStationCreate(BusStationBase):
     pass
@@ -75,8 +77,8 @@ class BusRoute(BusRouteBase):
     id: int
     is_active: bool
     created_at: datetime
-    origin_station: Optional[BusStation] = None
-    destination_station: Optional[BusStation] = None
+    origin_station: BusStation | None = None
+    destination_station: BusStation | None = None
 
     class Config:
         from_attributes = True
@@ -87,27 +89,27 @@ class BusBase(BaseModel):
     license_plate: str
     route_id: int
     capacity: int
-    driver_name: Optional[str] = None
-    driver_phone: Optional[str] = None
+    driver_name: str | None = None
+    driver_phone: str | None = None
 
 class BusCreate(BusBase):
     pass
 
 class BusUpdate(BaseModel):
-    current_latitude: Optional[float] = None
-    current_longitude: Optional[float] = None
-    status: Optional[BusStatus] = None
-    driver_name: Optional[str] = None
-    driver_phone: Optional[str] = None
+    current_latitude: float | None = None
+    current_longitude: float | None = None
+    status: BusStatus | None = None
+    driver_name: str | None = None
+    driver_phone: str | None = None
 
 class Bus(BusBase):
     id: int
-    current_latitude: Optional[float] = None
-    current_longitude: Optional[float] = None
+    current_latitude: float | None = None
+    current_longitude: float | None = None
     status: BusStatus
     last_updated: datetime
     created_at: datetime
-    route: Optional[BusRoute] = None
+    route: BusRoute | None = None
 
     class Config:
         from_attributes = True
@@ -122,21 +124,21 @@ class BusScheduleCreate(BusScheduleBase):
     pass
 
 class BusScheduleUpdate(BaseModel):
-    actual_departure_time: Optional[datetime] = None
-    actual_arrival_time: Optional[datetime] = None
-    current_occupancy: Optional[int] = None
-    delay_minutes: Optional[int] = None
-    is_cancelled: Optional[bool] = None
+    actual_departure_time: datetime | None = None
+    actual_arrival_time: datetime | None = None
+    current_occupancy: int | None = None
+    delay_minutes: int | None = None
+    is_cancelled: bool | None = None
 
 class BusSchedule(BusScheduleBase):
     id: int
-    actual_departure_time: Optional[datetime] = None
-    actual_arrival_time: Optional[datetime] = None
+    actual_departure_time: datetime | None = None
+    actual_arrival_time: datetime | None = None
     current_occupancy: int
     is_cancelled: bool
     delay_minutes: int
     created_at: datetime
-    bus: Optional[Bus] = None
+    bus: Bus | None = None
 
     class Config:
         from_attributes = True
@@ -172,15 +174,15 @@ class Ticket(TicketBase):
     booking_time: datetime
     travel_date: datetime
     status: TicketStatus
-    qr_code: Optional[str] = None
+    qr_code: str | None = None
 
     class Config:
         from_attributes = True
 
 class TicketDetail(Ticket):
-    user: Optional[User] = None
-    schedule: Optional[BusSchedule] = None
-    payment: Optional['Payment'] = None
+    user: User | None = None
+    schedule: BusSchedule | None = None
+    payment: Payment | None = None
 
 # Payment schemas
 class PaymentBase(BaseModel):
@@ -195,7 +197,7 @@ class Payment(PaymentBase):
     ticket_id: int
     payment_reference: str
     status: PaymentStatus
-    processed_at: Optional[datetime] = None
+    processed_at: datetime | None = None
     created_at: datetime
 
     class Config:
@@ -211,8 +213,8 @@ class MapStation(BaseModel):
     active_buses: int
 
 class MapResponse(BaseModel):
-    stations: List[MapStation]
-    user_location: Optional[dict] = None
+    stations: list[MapStation]
+    user_location: dict | None = None
 
 # Fare pricing
 class FarePriceBase(BaseModel):
@@ -244,7 +246,7 @@ class RouteStopCreate(RouteStopBase):
 
 class RouteStop(RouteStopBase):
     id: int
-    station: Optional[BusStation] = None
+    station: BusStation | None = None
 
     class Config:
         from_attributes = True
@@ -256,7 +258,7 @@ class DashboardStats(BaseModel):
     total_routes: int
     daily_tickets: int
     daily_revenue_etb: float
-    popular_routes: List[dict]
+    popular_routes: list[dict]
 
 # Seat schemas
 class SeatBase(BaseModel):
@@ -288,7 +290,7 @@ class SeatLayout(BaseModel):
     total_seats: int
     rows: int
     seats_per_row: int
-    seats: List[SeatAvailability]
+    seats: list[SeatAvailability]
 
 # Seat reservation schemas
 class SeatReservationBase(BaseModel):
@@ -300,19 +302,19 @@ class SeatReservationCreate(SeatReservationBase):
 
 class SeatReservation(SeatReservationBase):
     id: int
-    ticket_id: Optional[int] = None
+    ticket_id: int | None = None
     status: str
     reserved_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
 
     class Config:
         from_attributes = True
 
 # Updated ticket schemas to include seats
 class TicketCreateWithSeats(TicketBase):
-    selected_seat_ids: List[int]
+    selected_seat_ids: list[int]
 
 # Error response
 class ErrorResponse(BaseModel):
     detail: str
-    error_code: Optional[str] = None
+    error_code: str | None = None

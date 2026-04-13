@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
 import { ArrowLeft, Car } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { Badge } from './ui/badge';
 
 export type SeatStatus = 'available' | 'occupied' | 'selected' | 'reserved';
 
@@ -27,7 +27,7 @@ export function SeatSelection({
   scheduleId,
   requiredSeats,
   onSeatsSelected,
-  onBack
+  onBack,
 }: SeatSelectionProps) {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -36,50 +36,78 @@ export function SeatSelection({
 
   // Get route and bus info based on busId
   const busInfo = {
-    '1': { route: 'AA-01', origin: 'Meskel Square', destination: 'Bole Airport', date: '12 Sept 2023', capacity: 48, features: ['AC', 'WiFi', 'USB'] },
-    '2': { route: 'AA-05', origin: 'Merkato', destination: 'Piazza', date: '12 Sept 2023', capacity: 36, features: ['AC', 'WiFi'] },
-    '3': { route: 'AA-12', origin: 'AAU', destination: 'Stadium', date: '12 Sept 2023', capacity: 44, features: ['AC'] },
-  }[busId] || { route: 'AA-01', origin: 'Meskel Square', destination: 'Bole Airport', date: '12 Sept 2023', capacity: 48, features: ['AC', 'WiFi', 'USB'] };
+    '1': {
+      route: 'AA-01',
+      origin: 'Meskel Square',
+      destination: 'Bole Airport',
+      date: '12 Sept 2023',
+      capacity: 48,
+      features: ['AC', 'WiFi', 'USB'],
+    },
+    '2': {
+      route: 'AA-05',
+      origin: 'Merkato',
+      destination: 'Piazza',
+      date: '12 Sept 2023',
+      capacity: 36,
+      features: ['AC', 'WiFi'],
+    },
+    '3': {
+      route: 'AA-12',
+      origin: 'AAU',
+      destination: 'Stadium',
+      date: '12 Sept 2023',
+      capacity: 44,
+      features: ['AC'],
+    },
+  }[busId] || {
+    route: 'AA-01',
+    origin: 'Meskel Square',
+    destination: 'Bole Airport',
+    date: '12 Sept 2023',
+    capacity: 48,
+    features: ['AC', 'WiFi', 'USB'],
+  };
 
   // Load seat data (simulated API call)
   useEffect(() => {
     const loadSeatData = async () => {
       setIsLoading(true);
-      
+
       // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Generate realistic seat layout
       const seatLayout: Seat[] = [];
       const totalRows = Math.ceil(busInfo.capacity / 4); // 4 seats per row
-      
+
       for (let row = 1; row <= totalRows; row++) {
         for (const position of ['A', 'B', 'C', 'D'] as const) {
           // Skip some seats at the back for smaller buses
           if (row * 4 + ['A', 'B', 'C', 'D'].indexOf(position) >= busInfo.capacity) {
             continue;
           }
-          
+
           const seatNumber = `${row}${position}`;
           let status: SeatStatus = 'available';
-          
+
           // Simulate some occupied seats (more realistic distribution)
           if (Math.random() > 0.75) {
             status = 'occupied';
           } else if (Math.random() > 0.95) {
             status = 'reserved';
           }
-          
+
           seatLayout.push({
             id: seatNumber,
             number: seatNumber,
             status,
             row,
-            column: position
+            column: position,
           });
         }
       }
-      
+
       setSeats(seatLayout);
       setIsLoading(false);
     };
@@ -88,15 +116,15 @@ export function SeatSelection({
   }, [busId, scheduleId, busInfo.capacity]);
 
   const handleSeatClick = (seatId: string) => {
-    const seat = seats.find(s => s.id === seatId);
+    const seat = seats.find((s) => s.id === seatId);
     if (!seat || seat.status === 'occupied' || seat.status === 'reserved') {
       return;
     }
 
-    setSelectedSeats(prev => {
+    setSelectedSeats((prev) => {
       if (prev.includes(seatId)) {
         // Deselect seat
-        return prev.filter(id => id !== seatId);
+        return prev.filter((id) => id !== seatId);
       } else if (prev.length < requiredSeats) {
         // Select seat if we haven't reached the limit
         return [...prev, seatId];
@@ -109,10 +137,10 @@ export function SeatSelection({
 
   const getSeatIcon = (seat: Seat) => {
     const isSelected = selectedSeats.includes(seat.id);
-    
+
     let bgColor = 'bg-gray-100 border-2 border-gray-300'; // available
     let textColor = 'text-gray-600';
-    
+
     if (seat.status === 'occupied') {
       bgColor = 'bg-red-500 border-red-500';
       textColor = 'text-white';
@@ -153,9 +181,9 @@ export function SeatSelection({
       );
     }
 
-    const maxRow = Math.max(...seats.map(s => s.row));
+    const maxRow = Math.max(...seats.map((s) => s.row));
     const rows = Array.from({ length: maxRow }, (_, i) => i + 1);
-    
+
     return (
       <div className="bg-white rounded-lg p-4 max-h-96 overflow-y-auto">
         {/* Driver area */}
@@ -164,30 +192,26 @@ export function SeatSelection({
             <Car className="w-6 h-6 text-gray-600" />
           </div>
         </div>
-        
+
         {/* Seat layout */}
         <div className="space-y-3">
-          {rows.map(row => {
-            const rowSeats = seats.filter(s => s.row === row);
-            const leftSeats = rowSeats.filter(s => s.column === 'A' || s.column === 'B');
-            const rightSeats = rowSeats.filter(s => s.column === 'C' || s.column === 'D');
-            
+          {rows.map((row) => {
+            const rowSeats = seats.filter((s) => s.row === row);
+            const leftSeats = rowSeats.filter((s) => s.column === 'A' || s.column === 'B');
+            const rightSeats = rowSeats.filter((s) => s.column === 'C' || s.column === 'D');
+
             return (
               <div key={row} className="flex items-center justify-between">
                 {/* Left side seats */}
-                <div className="flex gap-1">
-                  {leftSeats.map(seat => getSeatIcon(seat))}
-                </div>
-                
+                <div className="flex gap-1">{leftSeats.map((seat) => getSeatIcon(seat))}</div>
+
                 {/* Aisle with row number */}
                 <div className="w-8 flex items-center justify-center text-xs text-muted-foreground">
                   {row}
                 </div>
-                
+
                 {/* Right side seats */}
-                <div className="flex gap-1">
-                  {rightSeats.map(seat => getSeatIcon(seat))}
-                </div>
+                <div className="flex gap-1">{rightSeats.map((seat) => getSeatIcon(seat))}</div>
               </div>
             );
           })}
@@ -203,11 +227,11 @@ export function SeatSelection({
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>• Route Number: {busInfo.route}</p>
           <p>• Total Seats: {busInfo.capacity}</p>
-          <p>• Available Seats: {seats.filter(s => s.status === 'available').length}</p>
+          <p>• Available Seats: {seats.filter((s) => s.status === 'available').length}</p>
           <p>• Features: {busInfo.features.join(', ')}</p>
         </div>
       </div>
-      
+
       <div>
         <h3 className="font-medium mb-2">Route Information</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
@@ -218,7 +242,7 @@ export function SeatSelection({
           <p>• Date: {busInfo.date}</p>
         </div>
       </div>
-      
+
       <div>
         <h3 className="font-medium mb-2">Boarding Rules</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
@@ -237,7 +261,7 @@ export function SeatSelection({
         <h3 className="font-medium mb-2">Selected Seats</h3>
         {selectedSeats.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {selectedSeats.map(seatId => (
+            {selectedSeats.map((seatId) => (
               <Badge key={seatId} variant="secondary" className="bg-green-100 text-green-800">
                 Seat {seatId}
               </Badge>
@@ -247,7 +271,7 @@ export function SeatSelection({
           <p className="text-sm text-muted-foreground">No seats selected</p>
         )}
       </div>
-      
+
       <div>
         <h3 className="font-medium mb-2">Booking Summary</h3>
         <div className="space-y-2 text-sm">
@@ -257,7 +281,9 @@ export function SeatSelection({
           </div>
           <div className="flex justify-between">
             <span>Selected Seats:</span>
-            <span>{selectedSeats.length} of {requiredSeats}</span>
+            <span>
+              {selectedSeats.length} of {requiredSeats}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Seat Numbers:</span>
@@ -290,7 +316,7 @@ export function SeatSelection({
         <div>
           <h1 className="text-xl font-medium">Select Seat(s)</h1>
           <p className="text-sm text-muted-foreground">
-            {seats.filter(s => s.status === 'available').length} • {busInfo.capacity}
+            {seats.filter((s) => s.status === 'available').length} • {busInfo.capacity}
           </p>
         </div>
       </div>
@@ -319,8 +345,8 @@ export function SeatSelection({
         <button
           onClick={() => setActiveTab('seat-plan')}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'seat-plan' 
-              ? 'bg-background text-foreground shadow-sm' 
+            activeTab === 'seat-plan'
+              ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -329,8 +355,8 @@ export function SeatSelection({
         <button
           onClick={() => setActiveTab('info')}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'info' 
-              ? 'bg-background text-foreground shadow-sm' 
+            activeTab === 'info'
+              ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -339,8 +365,8 @@ export function SeatSelection({
         <button
           onClick={() => setActiveTab('review')}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'review' 
-              ? 'bg-background text-foreground shadow-sm' 
+            activeTab === 'review'
+              ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -379,19 +405,17 @@ export function SeatSelection({
 
       {/* Continue Button */}
       <div className="sticky bottom-0 bg-background pt-4 border-t">
-        <Button 
-          className="w-full" 
+        <Button
+          className="w-full"
           size="lg"
           disabled={selectedSeats.length !== requiredSeats}
           onClick={() => onSeatsSelected(selectedSeats)}
         >
-          {selectedSeats.length === 0 ? (
-            `Select ${requiredSeats} seat${requiredSeats !== 1 ? 's' : ''} to continue`
-          ) : selectedSeats.length < requiredSeats ? (
-            `Select ${requiredSeats - selectedSeats.length} more seat${requiredSeats - selectedSeats.length !== 1 ? 's' : ''}`
-          ) : (
-            `Continue with seats ${selectedSeats.join(', ')}`
-          )}
+          {selectedSeats.length === 0
+            ? `Select ${requiredSeats} seat${requiredSeats !== 1 ? 's' : ''} to continue`
+            : selectedSeats.length < requiredSeats
+              ? `Select ${requiredSeats - selectedSeats.length} more seat${requiredSeats - selectedSeats.length !== 1 ? 's' : ''}`
+              : `Continue with seats ${selectedSeats.join(', ')}`}
         </Button>
       </div>
     </div>
