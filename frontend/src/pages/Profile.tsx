@@ -1,4 +1,4 @@
-import { ArrowLeft, Camera, Edit3, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
+import { Camera, Edit3, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { SmartBusLogo } from '../components/SmartBusLogo';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
@@ -12,7 +12,7 @@ interface UserProfileProps {
   onBack: () => void;
 }
 
-export function Profile({ onBack }: UserProfileProps) {
+export function Profile({ onBack: _onBack }: UserProfileProps) {
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,30 +60,19 @@ export function Profile({ onBack }: UserProfileProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-primary text-primary-foreground p-4">
-        <div className="flex items-center gap-3 mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="text-primary-foreground hover:bg-primary-foreground/10"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-lg font-medium">Profile</h1>
-        </div>
-
-        {/* Profile Header */}
+      {/* Profile Header */}
+      <div className="p-4">
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="w-20 h-20">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
+              <AvatarFallback className="text-lg bg-primary text-primary-foreground">
+                {getInitials(user.name)}
+              </AvatarFallback>
             </Avatar>
             <Button
               size="icon"
-              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-accent hover:bg-accent/80 text-accent-foreground"
+              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-secondary text-secondary-foreground"
             >
               <Camera className="w-4 h-4" />
             </Button>
@@ -91,10 +80,10 @@ export function Profile({ onBack }: UserProfileProps) {
 
           <div className="flex-1">
             <h2 className="text-xl font-medium">{user.name}</h2>
-            <p className="text-primary-foreground/80">SmartBus Member</p>
+            <p className="text-muted-foreground">SmartBus Member</p>
             <div className="flex items-center gap-1 mt-1">
-              <SmartBusLogo size={16} className="text-primary-foreground" />
-              <span className="text-sm text-primary-foreground/70">Member since 2024</span>
+              <SmartBusLogo size={16} />
+              <span className="text-sm text-muted-foreground">Member since 2024</span>
             </div>
           </div>
         </div>
@@ -198,12 +187,12 @@ export function Profile({ onBack }: UserProfileProps) {
         <Card className="p-6">
           <h3 className="text-lg font-medium mb-4">Travel Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-primary/5 rounded-lg">
-              <div className="text-2xl font-medium text-primary">12</div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-medium">12</div>
               <div className="text-sm text-muted-foreground">Total Trips</div>
             </div>
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <div className="text-2xl font-medium text-accent-foreground">2,340</div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-medium">2,340</div>
               <div className="text-sm text-muted-foreground">ETB Saved</div>
             </div>
           </div>

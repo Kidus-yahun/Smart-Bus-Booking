@@ -55,7 +55,7 @@ function MainApp() {
     setTicketId(null);
   };
 
-  const handleNavigate = (screen: 'home' | 'profile' | 'trips' | 'settings') => {
+  const handleNavigate = (screen: 'home' | 'trips' | 'profile' | 'settings') => {
     setCurrentState(screen);
   };
 
@@ -66,11 +66,11 @@ function MainApp() {
   const renderPage = () => {
     switch (currentState) {
       case 'profile':
-        return <Profile onBack={handleBackFromScreen} />;
+        return <Profile onBack={() => {}} />;
       case 'trips':
-        return <Trips onBack={handleBackFromScreen} />;
+        return <Trips onBack={() => {}} />;
       case 'settings':
-        return <Settings onBack={handleBackFromScreen} />;
+        return <Settings onBack={() => {}} />;
       case 'booking':
         return selectedBusId ? (
           <Booking
@@ -97,11 +97,11 @@ function MainApp() {
   }
 
   return (
-    <div className="min-h-screen bg-background safe-area-top pb-16">
+    <div className="min-h-screen bg-background safe-area-top pb-14">
       <div className="status-bar-spacer"></div>
-      <Header />
+      <Header onNavigate={(screen) => setCurrentState(screen)} />
 
-      <div className="mobile-container mx-auto p-4 max-w-md space-y-6 mobile-scroll pb-20">
+      <div className="mobile-container mx-auto px-4 py-2 max-w-md space-y-4 mobile-scroll pb-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentState}
@@ -119,11 +119,7 @@ function MainApp() {
 
       <BottomNav
         currentScreen={
-          currentState === 'confirmation' || currentState === 'booking'
-            ? 'home'
-            : currentState === 'profile' || currentState === 'trips' || currentState === 'settings'
-              ? currentState
-              : 'home'
+          currentState === 'settings' ? 'settings' : currentState === 'trips' ? 'trips' : 'home'
         }
         onNavigate={handleNavigate}
       />

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Bus, Download, Loader2, MoreVertical, Share2 } from 'lucide-react';
+import { Bus, Download, Loader2, MoreVertical, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -89,12 +89,7 @@ export function Trips({ onBack }: TripsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h2 className="text-xl font-semibold">My Trips</h2>
-      </div>
+      <h2 className="text-xl font-semibold">My Trips</h2>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'active' | 'completed')}>
         <TabsList className="w-full">
