@@ -1,0 +1,209 @@
+/* Mobile-specific styles for SmartBus app */
+
+/* iOS Safe Area handling */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Prevent zoom on inputs */
+input[type="email"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="url"],
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* Ensure labels are properly displayed above inputs */
+label[data-slot="label"] {
+  display: block !important;
+  margin-bottom: 0.5rem;
+}
+
+/* Touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .mobile-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  /* Container margins */
+  .mobile-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 100%;
+  }
+  
+  /* Card spacing */
+  .mobile-card {
+    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Button adjustments */
+  .mobile-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+  }
+  
+  /* Map container */
+  .mobile-map {
+    height: 250px;
+    min-height: 250px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+  }
+  
+  /* List items */
+  .mobile-list-item {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-list-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Seat selection grid */
+  .mobile-seat-grid {
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .mobile-seat {
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 0.5rem;
+  }
+}
+
+/* Landscape orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mobile-map {
+    height: 200px;
+  }
+  
+  .mobile-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobile-icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode adjustments for mobile */
+@media (prefers-color-scheme: dark) {
+  .mobile-card {
+    box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Prevent overscroll bounce on iOS */
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbars but keep functionality */
+.mobile-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Loading states */
+.mobile-loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Haptic feedback preparation */
+.haptic-light {
+  cursor: pointer;
+}
+
+.haptic-medium {
+  cursor: pointer;
+}
+
+.haptic-heavy {
+  cursor: pointer;
+}
+
+/* Bottom sheet style modals */
+.mobile-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Ensure modals are always on top */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 101;
+  touch-action: pan-y;
+}
+
+/* Status bar spacing */
+.status-bar-spacer {
+  height: env(safe-area-inset-top);
+}
+
+/* Keyboard spacing */
+.keyboard-spacer {
+  height: env(keyboard-inset-height);
+}

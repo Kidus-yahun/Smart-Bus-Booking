@@ -1,6 +1,44 @@
-node_modules/
-dist/
+# Database
+db/
+
+# Environment files (secrets)
 .env
-.env.*
+.env.local
+.env.*.local
+
+# Backend
+backend/.venv/
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/*.tsbuildinfo
+
+# Flutter
+smartbus_mobile/.dart_tool/
+smartbus_mobile/.pub/
+smartbus_mobile/.pub-cache/
+smartbus_mobile/build/
+smartbus_mobile/*.lock
+
+# Cache
+.ruff_cache/
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
+

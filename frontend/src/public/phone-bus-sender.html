@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartBus Demo: Phone Bus Sender</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 16px; }
+      input { width: 100%; padding: 8px; margin: 6px 0; }
+      button { padding: 10px 14px; margin-top: 8px; width: 100%; }
+      .row { margin-top: 10px; }
+      .status { margin-top: 12px; padding: 10px; background: #f3f3f3; border-radius: 8px; }
+      .small { color: #666; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h2>SmartBus Demo (Phone -> Backend)</h2>
+    <p class="small">
+      Open this page on your phone while the backend is running on your PC.
+      It will continuously send your phone's GPS as the "demo bus" location.
+    </p>
+
+    <div class="row">
+      <label>Backend URL</label>
+      <input id="backendUrl" value="http://localhost:8000/api/realtime/demo/bus-location" />
+      <div class="small">
+        If your phone can't reach <code>localhost</code>, replace with your PC IP, e.g.:
+        <code>http://192.168.1.10:8000/api/realtime/demo/bus-location</code>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>busId</label>
+      <input id="busId" value="demo-bus" />
+    </div>
+
+    <button id="startBtn">Start Sending GPS</button>
+    <button id="stopBtn" disabled>Stop</button>
+
+    <div class="status">
+      <div><b>Status:</b> <span id="status">Idle</span></div>
+      <div class="small" style="margin-top: 8px;">
+        Last GPS: <span id="lastGps">-</span>
+        <br />
+        Last sent: <span id="lastSent">-</span>
+      </div>
+    </div>
+
+    <script>
+      const backendUrlEl = document.getElementById('backendUrl');
+      const busIdEl = document.getElementById('busId');
+      const statusEl = document.getElementById('status');
+      const lastGpsEl = document.getElementById('lastGps');
+      const lastSentEl = document.getElementById('lastSent');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+
+      let watchId = null;
+      let lastSendMs = 0;
+      const minSendIntervalMs = 1000;
+
+      function setStatus(text) {
+        statusEl.textContent = text;
+      }
+
+      async function sendLocation(lat, lng, timestamp) {
+        const busId = busIdEl.value.trim() || 'demo-bus';
+        const payload = { busId, lat, lng, timestamp };
+        const res = await fetch(backendUrlEl.value, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error('HTTP ' + res.status + ' ' + errText);
+        }
+      }
+
+      function start() {
+        if (!('geolocation' in navigator)) {
+          setStatus('Geolocation not supported on this browser.');
+          return;
+        }
+
+        setStatus('Requesting GPS permission...');
+        watchId = navigator.geolocation.watchPosition(
+          async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const timestamp = Date.now();
+            lastGpsEl.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+            const now = Date.now();
+            if (now - lastSendMs < minSendIntervalMs) return;
+            lastSendMs = now;
+
+            try {
+              await sendLocation(lat, lng, timestamp);
+              lastSentEl.textContent = new Date(timestamp).toLocaleTimeString();
+              setStatus('Sending...');
+            } catch (e) {
+              console.error(e);
+              setStatus('Send failed. Check backend URL/CORS and backend running.');
+            }
+          },
+          (err) => {
+            console.error(err);
+            setStatus('GPS error: ' + err.message);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 1000,
+            timeout: 10000
+          }
+        );
+
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+      }
+
+      function stop() {
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        setStatus('Stopped.');
+      }
+
+      startBtn.addEventListener('click', start);
+      stopBtn.addEventListener('click', stop);
+    </script>
+  </body>
+</html>
+
