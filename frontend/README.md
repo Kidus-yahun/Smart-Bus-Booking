@@ -1,76 +1,25 @@
-# SmartBus Ethiopia Frontend
+# Frontend
 
-React frontend for the SmartBus booking system.
+React frontend for SmartBus.
 
-## Prerequisites
+## Setup
 
-- Node.js 18+
-- npm
-
-## Installation
-
-1. Navigate to the frontend directory:
 ```bash
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
+cp .env.example .env
 ```
 
-3. Create environment file (optional - defaults to localhost:7077):
-```bash
-echo "VITE_API_URL=http://localhost:7077" > .env
-```
+## Run
 
-## Running
-
-Start the development server:
 ```bash
 npm run dev
 ```
 
-The app will be available at http://localhost:3000
+Runs at http://localhost:5173
 
-## Building
+## Scripts
 
-Build for production:
-```bash
-npm run build
-```
-
-Preview production build:
-```bash
-npm run preview
-```
-
-## Project Structure
-
-```
-frontend/
-├── src/
-│   ├── lib/            # API utilities
-│   ├── contexts/       # React contexts (Auth, Theme)
-│   ├── components/     # React components
-│   └── styles/        # CSS styles
-├── package.json
-├── vite.config.ts
-└── index.html
-```
-
-## API Configuration
-
-The frontend connects to the backend API. Configure the URL in `.env`:
-
-```
-VITE_API_URL=http://localhost:7077
-```
-
-## Dependencies
-
-- React 18
-- TanStack Query (data fetching)
-- Tailwind CSS (styling)
-- Radix UI (component library)
-- Lucide React (icons)
+- `npm run dev` - Dev server
+- `npm run build` - Build
+- `npm run lint` - Lint
