@@ -187,3 +187,29 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Leaflet map marker styles */
+.marker-inner {
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.marker-user {
+  background-color: #3b82f6;
+  width: 20px;
+  height: 20px;
+  border-width: 3px;
+}
+
+.marker-station {
+  background-color: #f97316;
+  width: 16px;
+  height: 16px;
+}
+
+.marker-bus {
+  background-color: #10b981;
+  width: 16px;
+  height: 16px;
+}

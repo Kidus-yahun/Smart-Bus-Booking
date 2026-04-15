@@ -155,7 +155,7 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
         <BusDetailsModal
           busDetails={{
             id: selectedBusForDetails,
-            route_number: arrivals?.find((a) => a.id === selectedBusForDetails)?.route_number || '',
+            busNumber: arrivals?.find((a) => a.id === selectedBusForDetails)?.route_number || '',
             route: arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || '',
             from: 'Addis Ababa',
             to: arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || '',
@@ -168,7 +168,7 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
             price: 35,
             rating: 4.8,
             amenities: ['wifi', 'ac', 'charging'],
-            accessible: arrivals?.find((a) => a.id === selectedBusForDetails)?.accessible || false,
+            accessibility: arrivals?.find((a) => a.id === selectedBusForDetails)?.accessible || false,
             busType: 'standard',
             driverInfo: {
               name: 'Driver',

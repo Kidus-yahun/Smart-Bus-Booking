@@ -55,8 +55,12 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     enabled: !!selectedRouteId,
   });
 
-  const routeData =
-    schedule?.bus?.route?.id && routes ? routes.find((r) => r.id === schedule.bus.route.id) : null;
+  const routeData = (() => {
+    if (!schedule || typeof schedule !== 'object') return null;
+    const sched = schedule as { bus?: { route?: { id: number } } };
+    if (!sched.bus?.route?.id || !routes) return null;
+    return routes.find((r) => r.id === sched.bus!.route!.id) || null;
+  })();
 
   useEffect(() => {
     if (routeData) {
