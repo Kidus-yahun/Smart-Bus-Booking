@@ -1,5 +1,3 @@
-Here's a clean and professional long description for your Smart Bus project:
-
 🚌 Smart School Bus Tracking System
 A modern, real-time GPS-based School Bus Tracking System designed to enhance student safety, improve transportation efficiency, and provide complete transparency to parents, students, and school administrators.
 ✨ Project Overview
