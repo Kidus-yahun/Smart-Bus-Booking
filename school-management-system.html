@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #4f46e5;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .role-btn:hover {
+            border-color: #d1d5db;
+        }
+
+        .role-btn.active {
+            border-color: #4f46e5;
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-success {
+            background: #059669;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .demo-info {
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .demo-info p {
+            font-size: 12px;
+            color: #1e40af;
+        }
+
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-info span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .tabs {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .tab-header {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-btn.active {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .tab-content {
+            padding: 30px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 25px;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .stat-card.blue {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .stat-card.green {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .stat-card.purple {
+            background: #faf5ff;
+            color: #7e22ce;
+        }
+
+        .stat-card.orange {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .stat-card.yellow {
+            background: #fefce8;
+            color: #a16207;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stat-card .sub-value {
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .list-item {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .list-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .list-item p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .question-block {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .question-block h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #f9fafb;
+        }
+
+        .option.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .option input[type="radio"] {
+            width: auto;
+            margin-right: 12px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4f46e5;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.success {
+            background: #059669;
+        }
+
+        .progress-fill.warning {
+            background: #f59e0b;
+        }
+
+        .progress-fill.danger {
+            background: #dc2626;
+        }
+
+        .answer-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .answer-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .answer-box.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .answer-box.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-btn:hover {
+            color: #1f2937;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-box-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box .btn {
+            background: white;
+            color: #4f46e5;
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .info-box .btn:hover {
+            background: #f3f4f6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-header {
+                flex-wrap: nowrap;
+            }
+
+            .list-item-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="logo">
+                <h1>🎓 School Portal</h1>
+                <p>Management System</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>I am a:</label>
+                    <div class="role-selector">
+                        <button type="button" class="role-btn active" data-role="student">Student</button>
+                        <button type="button" class="role-btn" data-role="teacher">Teacher</button>
+                        <button type="button" class="role-btn" data-role="parent">Parent</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <div id="errorMsg" class="error hidden"></div>
+
+                <button type="submit" class="btn">Sign In</button>
+
+                <div class="demo-info">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <p id="demoCredentials">alice@student.com / password</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="dashboard">
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Welcome, <span id="studentName"></span>!</h1>
+                    <p>Class <span id="studentClass"></span></p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <p><span id="studentNameHeader"></span></p>
+                        <span>Student</span>
+                    </div>
+                    <button class="btn btn-small btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="switchTab('student', 'overview')">Overview</button>
+                    <button class="tab-btn" onclick="switchTab('student', 'exams')">Exams</button>
+                    <button class="tab-btn" onclick="switchTab('student', 'results')">Results</button>
+                    <button class="tab-btn" onclick="switchTab('student', 'messages')">Messages</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="student-overview" class="tab-pane active">
+                        <div class="stats-grid">
+                            <div class="stat-card blue">
+                                <h3>Available Exams</h3>
+                                <div class="value" id="availableExams">0</div>
+                            </div>
+                            <div class="stat-card green">
+                                <h3>Average Score</h3>
+                                <div class="value" id="averageScore">0%</div>
+                            </div>
+                            <div class="stat-card purple">
+                                <h3>Unread Messages</h3>
+                                <div class="value" id="unreadMessages">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="student-exams" class="tab-pane">
+                        <div id="examsList"></div>
+                    </div>
+
+                    <div id="student-results" class="tab-pane">
+                        <div id="resultsList"></div>
+                    </div>
+
+                    <div id="student-messages" class="tab-pane">
+                        <div id="messagesList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div id="teacherDashboard" class="dashboard">
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Teacher Dashboard</h1>
+                    <p><span id="teacherSubject"></span></p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <p><span id="teacherName"></span></p>
+                        <span>Teacher</span>
+                    </div>
+                    <button class="btn btn-small btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="switchTab('teacher', 'overview')">Overview</button>
+                    <button class="tab-btn" onclick="switchTab('teacher', 'students')">Students</button>
+                    <button class="tab-btn" onclick="switchTab('teacher', 'exams')">Exams</button>
+                    <button class="tab-btn" onclick="switchTab('teacher', 'performance')">Performance</button>
+                    <button class="tab-btn" onclick="switchTab('teacher', 'messages')">Messages</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="teacher-overview" class="tab-pane active">
+                        <div class="stats-grid">
+                            <div class="stat-card blue">
+                                <h3>Total Students</h3>
+                                <div class="value" id="totalStudents">0</div>
+                            </div>
+                            <div class="stat-card green">
+                                <h3>Active Exams</h3>
+                                <div class="value" id="activeExams">0</div>
+                            </div>
+                            <div class="stat-card purple">
+                                <h3>Total Submissions</h3>
+                                <div class="value" id="totalSubmissions">0</div>
+                            </div>
+                            <div class="stat-card orange">
+                                <h3>Messages</h3>
+                                <div class="value" id="teacherMessages">0</div>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h3>Quick Actions</h3>
+                            <div class="info-box-actions">
+                                <button class="btn" onclick="showCreateExam()">Create New Exam</button>
+                                <button class="btn" onclick="showSendMessage('teacher')">Send Message</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="teacher-students" class="tab-pane">
+                        <div id="studentsList"></div>
+                    </div>
+
+                    <div id="teacher-exams" class="tab-pane">
+                        <div class="card-header">
+                            <h3>My Exams</h3>
+                            <button class="btn btn-small" onclick="showCreateExam()">+ Create Exam</button>
+                        </div>
+                        <div id="teacherExamsList"></div>
+                    </div>
+
+                    <div id="teacher-performance" class="tab-pane">
+                        <h3 style="margin-bottom: 20px;">Student Performance Overview</h3>
+                        <div id="performanceList"></div>
+                    </div>
+
+                    <div id="teacher-messages" class="tab-pane">
+                        <div class="card-header">
+                            <h3>Messages</h3>
+                            <button class="btn btn-small" onclick="showSendMessage('teacher')">+ New Message</button>
+                        </div>
+                        <div id="teacherMessagesList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parent Dashboard -->
+    <div id="parentDashboard" class="dashboard">
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Parent Portal</h1>
+                    <p>Monitoring: <span id="childName"></span> - Class <span id="childClass"></span></p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <p><span id="parentName"></span></p>
+                        <span>Parent</span>
+                    </div>
+                    <button class="btn btn-small btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="switchTab('parent', 'overview')">Overview</button>
+                    <button class="tab-btn" onclick="switchTab('parent', 'performance')">Performance</button>
+                    <button class="tab-btn" onclick="switchTab('parent', 'fees')">Fee Payments</button>
+                    <button class="tab-btn" onclick="switchTab('parent', 'messages')">Messages</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="parent-overview" class="tab-pane active">
+                        <div class="stats-grid">
+                            <div class="stat-card blue">
+                                <h3>Student</h3>
+                                <div class="value" style="font-size: 18px;" id="parentChildName"></div>
+                                <div class="sub-value">Class <span id="parentChildClass"></span></div>
+                            </div>
+                            <div class="stat-card green">
+                                <h3>Average Score</h3>
+                                <div class="value" id="parentAverageScore">0%</div>
+                            </div>
+                            <div class="stat-card purple">
+                                <h3>Pending Fees</h3>
+                                <div class="value" id="pendingFees">$0</div>
+                            </div>
+                            <div class="stat-card orange">
+                                <h3>Messages</h3>
+                                <div class="value" id="parentMessages">0</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 style="margin-bottom: 20px;">Recent Exam Results</h3>
+                            <div id="parentRecentResults"></div>
+                        </div>
+                    </div>
+
+                    <div id="parent-performance" class="tab-pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Academic Performance</h3>
+                            <div style="text-align: right;">
+                                <p style="font-size: 14px; color: #6b7280;">Overall Average</p>
+                                <p style="font-size: 28px; font-weight: bold; color: #4f46e5;" id="parentOverallAverage">0%</p>
+                            </div>
+                        </div>
+                        <div id="parentPerformanceList"></div>
+                    </div>
+
+                    <div id="parent-fees" class="tab-pane">
+                        <div class="stats-grid" style="margin-bottom: 30px;">
+                            <div class="stat-card green">
+                                <h3>Total Paid</h3>
+                                <div class="value" id="totalPaid">$0</div>
+                            </div>
+                            <div class="stat-card yellow">
+                                <h3>Pending</h3>
+                                <div class="value" id="totalPending">$0</div>
+                            </div>
+                            <div class="stat-card blue">
+                                <h3>Total Fees</h3>
+                                <div class="value" id="totalFees">$0</div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px;">Payment History</h3>
+                        <div id="feePaymentsList"></div>
+
+                        <div class="demo-info" style="margin-top: 20px;">
+                            <p><strong>Note:</strong> This is a demo system. Payment buttons are simulated and do not process real transactions.</p>
+                        </div>
+                    </div>
+
+                    <div id="parent-messages" class="tab-pane">
+                        <div class="card-header">
+                            <h3>Messages with Teachers</h3>
+                            <button class="btn btn-small" onclick="showSendMessage('parent')">+ Contact Teacher</button>
+                        </div>
+                        <div id="parentMessagesList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Taking Modal -->
+    <div id="examModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="examTitle"></h2>
+                <button class="close-btn" onclick="closeExamModal()">&times;</button>
+            </div>
+            <div id="examQuestions"></div>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="submitExam()">Submit Exam</button>
+                <button class="btn btn-secondary" onclick="closeExamModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Exam Modal -->
+    <div id="createExamModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Exam</h2>
+                <button class="close-btn" onclick="closeCreateExamModal()">&times;</button>
+            </div>
+            <form id="createExamForm">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Exam Title</label>
+                        <input type="text" id="examTitleInput" placeholder="e.g., Mathematics Mid-Term" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="examSubjectInput" placeholder="e.g., Mathematics" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="examDateInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (minutes)</label>
+                        <input type="number" id="examDurationInput" value="60" min="1" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Total Marks</label>
+                        <input type="number" id="examMarksInput" value="100" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Class</label>
+                        <select id="examClassInput" required>
+                            <option value="10A">10A</option>
+                            <option value="10B">10B</option>
+                            <option value="9A">9A</option>
+                            <option value="9B">9B</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 15px;">Questions (<span id="questionCount">0</span>)</h3>
+                <div id="questionsList"></div>
+
+                <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+                    <h4 style="margin-bottom: 15px;">Add Question</h4>
+                    <div class="form-group">
+                        <label>Question</label>
+                        <input type="text" id="questionText" placeholder="Enter question text">
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Option A</label>
+                            <input type="text" id="option0" placeholder="Option A">
+                        </div>
+                        <div class="form-group">
+                            <label>Option B</label>
+                            <input type="text" id="option1" placeholder="Option B">
+                        </div>
+                        <div class="form-group">
+                            <label>Option C</label>
+                            <input type="text" id="option2" placeholder="Option C">
+                        </div>
+                        <div class="form-group">
+                            <label>Option D</label>
+                            <input type="text" id="option3" placeholder="Option D">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Correct Answer</label>
+                        <select id="correctAnswer">
+                            <option value="0">Option A</option>
+                            <option value="1">Option B</option>
+                            <option value="2">Option C</option>
+                            <option value="3">Option D</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn" onclick="addQuestion()">Add Question</button>
+                </div>
+
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-success">Create Exam</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateExamModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Send Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Send Message</h2>
+                <button class="close-btn" onclick="closeMessageModal()">&times;</button>
+            </div>
+            <form id="messageForm">
+                <div class="form-group" id="recipientGroup">
+                    <label>Recipient</label>
+                    <select id="messageRecipient" required>
+                        <option value="">Select a recipient</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="messageSubject" placeholder="Message subject" required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="messageContent" rows="6" placeholder="Type your message here..." required></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">Send Message</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeMessageModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mock Data
+        const mockData = {
+            students: [
+                { id: 's1', name: 'Alice Johnson', email: 'alice@student.com', password: 'password', grade: '10', class: '10A', parentId: 'p1' },
+                { id: 's2', name: 'Bob Smith', email: 'bob@student.com', password: 'password', grade: '10', class: '10A', parentId: 'p2' },
+                { id: 's3', name: 'Carol Davis', email: 'carol@student.com', password: 'password', grade: '10', class: '10B', parentId: 'p3' }
+            ],
+            teachers: [
+                { id: 't1', name: 'Mr. Anderson', email: 'anderson@teacher.com', password: 'password', subject: 'Mathematics' },
+                { id: 't2', name: 'Ms. Williams', email: 'williams@teacher.com', password: 'password', subject: 'Science' }
+            ],
+            parents: [
+                { id: 'p1', name: 'Mary Johnson', email: 'mary@parent.com', password: 'password', studentId: 's1' },
+                { id: 'p2', name: 'John Smith', email: 'john@parent.com', password: 'password', studentId: 's2' },
+                { id: 'p3', name: 'Sarah Davis', email: 'sarah@parent.com', password: 'password', studentId: 's3' }
+            ],
+            exams: [
+                {
+                    id: 'e1',
+                    title: 'Mathematics Mid-Term',
+                    subject: 'Mathematics',
+                    date: '2026-03-20',
+                    duration: 60,
+                    totalMarks: 100,
+                    teacherId: 't1',
+                    class: '10A',
+                    questions: [
+                        { id: 'q1', question: 'What is the value of π (pi) approximately?', options: ['3.14159', '2.71828', '1.41421', '2.23607'], correctAnswer: 0 },
+                        { id: 'q2', question: 'Solve: 2x + 5 = 15. What is x?', options: ['5', '10', '7.5', '20'], correctAnswer: 0 },
+                        { id: 'q3', question: 'What is the area of a circle with radius 5?', options: ['78.54', '31.42', '15.71', '50'], correctAnswer: 0 },
+                        { id: 'q4', question: 'What is the square root of 144?', options: ['12', '14', '10', '16'], correctAnswer: 0 },
+                        { id: 'q5', question: 'If a triangle has angles 60°, 60°, what is the third angle?', options: ['60°', '45°', '90°', '30°'], correctAnswer: 0 }
+                    ]
+                },
+                {
+                    id: 'e2',
+                    title: 'Science Chapter Test',
+                    subject: 'Science',
+                    date: '2026-03-25',
+                    duration: 45,
+                    totalMarks: 50,
+                    teacherId: 't2',
+                    class: '10A',
+                    questions: [
+                        { id: 'q1', question: 'What is the chemical symbol for water?', options: ['H2O', 'CO2', 'O2', 'H2'], correctAnswer: 0 },
+                        { id: 'q2', question: 'Which planet is known as the Red Planet?', options: ['Mars', 'Venus', 'Jupiter', 'Saturn'], correctAnswer: 0 },
+                        { id: 'q3', question: 'What is the speed of light?', options: ['299,792 km/s', '150,000 km/s', '500,000 km/s', '100,000 km/s'], correctAnswer: 0 }
+                    ]
+                }
+            ],
+            examResults: [
+                { id: 'r1', examId: 'e2', studentId: 's1', score: 45, totalMarks: 50, answers: [0, 0, 0], submittedAt: '2026-03-10T10:30:00' }
+            ],
+            messages: [
+                { id: 'm1', from: 't1', to: 's1', subject: 'Homework Reminder', content: 'Please complete Chapter 5 exercises by Friday.', date: '2026-03-14', read: false },
+                { id: 'm2', from: 'p1', to: 't1', subject: 'Meeting Request', content: 'I would like to discuss my child\'s progress. Can we schedule a meeting?', date: '2026-03-13', read: true }
+            ],
+            feePayments: [
+                { id: 'f1', studentId: 's1', month: 'January 2026', amount: 500, status: 'paid', dueDate: '2026-01-05', paidDate: '2026-01-03' },
+                { id: 'f2', studentId: 's1', month: 'February 2026', amount: 500, status: 'paid', dueDate: '2026-02-05', paidDate: '2026-02-04' },
+                { id: 'f3', studentId: 's1', month: 'March 2026', amount: 500, status: 'pending', dueDate: '2026-03-05' },
+                { id: 'f4', studentId: 's1', month: 'April 2026', amount: 500, status: 'pending', dueDate: '2026-04-05' }
+            ]
+        };
+
+        // Initialize localStorage with mock data
+        function initializeData() {
+            if (!localStorage.getItem('students')) {
+                localStorage.setItem('students', JSON.stringify(mockData.students));
+                localStorage.setItem('teachers', JSON.stringify(mockData.teachers));
+                localStorage.setItem('parents', JSON.stringify(mockData.parents));
+                localStorage.setItem('exams', JSON.stringify(mockData.exams));
+                localStorage.setItem('examResults', JSON.stringify(mockData.examResults));
+                localStorage.setItem('messages', JSON.stringify(mockData.messages));
+                localStorage.setItem('feePayments', JSON.stringify(mockData.feePayments));
+            }
+        }
+
+        // Initialize on load
+        initializeData();
+
+        let currentUser = null;
+        let selectedRole = 'student';
+        let currentExam = null;
+        let examAnswers = [];
+        let examQuestions = [];
+        let currentMessageSender = '';
+
+        // Role selection
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedRole = this.dataset.role;
+                updateDemoCredentials();
+            });
+        });
+
+        function updateDemoCredentials() {
+            const credentials = {
+                student: 'alice@student.com / password',
+                teacher: 'anderson@teacher.com / password',
+                parent: 'mary@parent.com / password'
+            };
+            document.getElementById('demoCredentials').textContent = credentials[selectedRole];
+        }
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            const users = JSON.parse(localStorage.getItem(`${selectedRole}s`));
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                currentUser = { ...user, userType: selectedRole };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                errorMsg.classList.add('hidden');
+                showDashboard(selectedRole);
+            } else {
+                errorMsg.textContent = 'Invalid email or password';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        function showDashboard(role) {
+            document.getElementById('loginPage').style.display = 'none';
+            
+            if (role === 'student') {
+                document.getElementById('studentDashboard').classList.add('active');
+                loadStudentDashboard();
+            } else if (role === 'teacher') {
+                document.getElementById('teacherDashboard').classList.add('active');
+                loadTeacherDashboard();
+            } else if (role === 'parent') {
+                document.getElementById('parentDashboard').classList.add('active');
+                loadParentDashboard();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        function switchTab(dashboard, tab) {
+            // Update tab buttons
+            const tabButtons = document.querySelectorAll(`#${dashboard}Dashboard .tab-btn`);
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab panes
+            const tabPanes = document.querySelectorAll(`#${dashboard}Dashboard .tab-pane`);
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+            document.getElementById(`${dashboard}-${tab}`).classList.add('active');
+        }
+
+        // Student Dashboard Functions
+        function loadStudentDashboard() {
+            document.getElementById('studentName').textContent = currentUser.name;
+            document.getElementById('studentNameHeader').textContent = currentUser.name;
+            document.getElementById('studentClass').textContent = currentUser.class;
+
+            const exams = JSON.parse(localStorage.getItem('exams')).filter(e => e.class === currentUser.class);
+            const results = JSON.parse(localStorage.getItem('examResults')).filter(r => r.studentId === currentUser.id);
+            const messages = JSON.parse(localStorage.getItem('messages')).filter(m => m.to === currentUser.id);
+
+            // Overview stats
+            document.getElementById('availableExams').textContent = exams.length - results.length;
+            document.getElementById('averageScore').textContent = calculateAverageScore(results) + '%';
+            document.getElementById('unreadMessages').textContent = messages.filter(m => !m.read).length;
+
+            // Exams list
+            loadExamsList(exams, results);
+
+            // Results list
+            loadResultsList(results, exams);
+
+            // Messages list
+            loadMessagesList(messages);
+        }
+
+        function loadExamsList(exams, results) {
+            const container = document.getElementById('examsList');
+            if (exams.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No exams available</p>';
+                return;
+            }
+
+            container.innerHTML = exams.map(exam => {
+                const taken = results.some(r => r.examId === exam.id);
+                return `
+                    <div class="list-item">
+                        <div class="list-item-header">
+                            <div>
+                                <h4>${exam.title}</h4>
+                                <p>${exam.subject} • ${exam.date}</p>
+                                <p style="font-size: 12px; margin-top: 5px;">⏱️ ${exam.duration} min • ${exam.totalMarks} marks</p>
+                            </div>
+                            <div>
+                                ${taken ? 
+                                    '<span class="badge success">Completed</span>' :
+                                    `<button class="btn btn-small" onclick="startExam('${exam.id}')">Start Exam</button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadResultsList(results, exams) {
+            const container = document.getElementById('resultsList');
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No results yet</p>';
+                return;
+            }
+
+            container.innerHTML = results.map(result => {
+                const exam = exams.find(e => e.id === result.examId);
+                if (!exam) return '';
+                const percentage = (result.score / result.totalMarks) * 100;
+                const grade = percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger';
+
+                return `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h4>${exam.title}</h4>
+                                <p>${exam.subject}</p>
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Submitted: ${new Date(result.submittedAt).toLocaleString()}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 24px; font-weight: bold;">${result.score}/${result.totalMarks}</p>
+                                <p style="color: ${grade === 'success' ? '#059669' : grade === 'warning' ? '#f59e0b' : '#dc2626'}; font-weight: 600;">
+                                    ${percentage.toFixed(1)}%
+                                </p>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                            <p style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">Answer Review:</p>
+                            <div class="answer-grid">
+                                ${result.answers.map((ans, idx) => {
+                                    const correct = ans === exam.questions[idx].correctAnswer;
+                                    return `<div class="answer-box ${correct ? 'correct' : 'incorrect'}">${correct ? '✓' : '✗'}</div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${grade}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadMessagesList(messages) {
+            const container = document.getElementById('messagesList');
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No messages</p>';
+                return;
+            }
+
+            container.innerHTML = messages.map(msg => `
+                <div class="list-item" style="${!msg.read ? 'background: #eef2ff; border-color: #c7d2fe;' : ''}">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <h4>${msg.subject}</h4>
+                        <span style="font-size: 12px; color: #6b7280;">${msg.date}</span>
+                    </div>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 5px;">From: Teacher</p>
+                    <p>${msg.content}</p>
+                </div>
+            `).join('');
+        }
+
+        function startExam(examId) {
+            const exams = JSON.parse(localStorage.getItem('exams'));
+            currentExam = exams.find(e => e.id === examId);
+            examAnswers = new Array(currentExam.questions.length).fill(-1);
+
+            document.getElementById('examTitle').textContent = currentExam.title;
+            document.getElementById('examQuestions').innerHTML = currentExam.questions.map((q, idx) => `
+                <div class="question-block">
+                    <h4>${idx + 1}. ${q.question}</h4>
+                    ${q.options.map((opt, optIdx) => `
+                        <div class="option" onclick="selectAnswer(${idx}, ${optIdx})">
+                            <input type="radio" name="q${idx}" value="${optIdx}">
+                            <span>${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            document.getElementById('examModal').classList.add('active');
+        }
+
+        function selectAnswer(questionIdx, answerIdx) {
+            examAnswers[questionIdx] = answerIdx;
+            const options = document.querySelectorAll(`input[name="q${questionIdx}"]`);
+            options.forEach((opt, idx) => {
+                opt.parentElement.classList.toggle('selected', idx === answerIdx);
+                opt.checked = idx === answerIdx;
+            });
+        }
+
+        function submitExam() {
+            if (examAnswers.includes(-1)) {
+                if (!confirm('Some questions are not answered. Submit anyway?')) return;
+            }
+
+            let score = 0;
+            currentExam.questions.forEach((q, idx) => {
+                if (examAnswers[idx] === q.correctAnswer) {
+                    score += currentExam.totalMarks / currentExam.questions.length;
+                }
+            });
+
+            const result = {
+                id: 'r' + Date.now(),
+                examId: currentExam.id,
+                studentId: currentUser.id,
+                score: Math.round(score),
+                totalMarks: currentExam.totalMarks,
+                answers: examAnswers,
+                submittedAt: new Date().toISOString()
+            };
+
+            const results = JSON.parse(localStorage.getItem('examResults'));
+            results.push(result);
+            localStorage.setItem('examResults', JSON.stringify(results));
+
+            closeExamModal();
+            alert(`Exam submitted! Your score: ${Math.round(score)}/${currentExam.totalMarks}`);
+            loadStudentDashboard();
+            switchTab('student', 'results');
+        }
+
+        function closeExamModal() {
+            document.getElementById('examModal').classList.remove('active');
+            currentExam = null;
+            examAnswers = [];
+        }
+
+        function calculateAverageScore(results) {
+            if (results.length === 0) return 0;
+            const total = results.reduce((sum, r) => sum + (r.score / r.totalMarks) * 100, 0);
+            return Math.round(total / results.length);
+        }
+
+        // Teacher Dashboard Functions
+        function loadTeacherDashboard() {
+            document.getElementById('teacherName').textContent = currentUser.name;
+            document.getElementById('teacherSubject').textContent = currentUser.subject;
+
+            const students = JSON.parse(localStorage.getItem('students'));
+            const exams = JSON.parse(localStorage.getItem('exams')).filter(e => e.teacherId === currentUser.id);
+            const results = JSON.parse(localStorage.getItem('examResults'));
+            const messages = JSON.parse(localStorage.getItem('messages')).filter(m => m.to === currentUser.id || m.from === currentUser.id);
+
+            // Overview stats
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('activeExams').textContent = exams.length;
+            document.getElementById('totalSubmissions').textContent = results.length;
+            document.getElementById('teacherMessages').textContent = messages.length;
+
+            // Students list
+            loadTeacherStudentsList(students, results);
+
+            // Exams list
+            loadTeacherExamsList(exams, results);
+
+            // Performance list
+            loadPerformanceList(students, results, exams);
+
+            // Messages list
+            loadTeacherMessagesList(messages);
+        }
+
+        function loadTeacherStudentsList(students, results) {
+            const container = document.getElementById('studentsList');
+            container.innerHTML = students.map(student => {
+                const studentResults = results.filter(r => r.studentId === student.id);
+                const avgScore = calculateAverageScore(studentResults);
+                return `
+                    <div class="list-item">
+                        <div class="list-item-header">
+                            <div>
+                                <h4>${student.name}</h4>
+                                <p>${student.email}</p>
+                                <p style="font-size: 12px; margin-top: 5px;">Class ${student.class} • Grade ${student.grade}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 14px; color: #6b7280;">Average Performance</p>
+                                <p style="font-size: 24px; font-weight: bold; color: #4f46e5;">${avgScore}%</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadTeacherExamsList(exams, results) {
+            const container = document.getElementById('teacherExamsList');
+            if (exams.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No exams created yet</p>';
+                return;
+            }
+
+            container.innerHTML = exams.map(exam => {
+                const submissions = results.filter(r => r.examId === exam.id).length;
+                return `
+                    <div class="list-item">
+                        <div class="list-item-header">
+                            <div style="flex: 1;">
+                                <h4>${exam.title}</h4>
+                                <p>${exam.subject} • ${exam.date}</p>
+                                <p style="font-size: 12px; margin-top: 5px;">
+                                    ${exam.questions.length} questions • ${exam.duration} min • ${exam.totalMarks} marks • Class ${exam.class}
+                                </p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="badge info">${submissions} submissions</span>
+                                <button class="btn btn-small btn-danger" onclick="deleteExam('${exam.id}')">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadPerformanceList(students, results, exams) {
+            const container = document.getElementById('performanceList');
+            container.innerHTML = students.map(student => {
+                const studentResults = results.filter(r => r.studentId === student.id);
+                const avgScore = calculateAverageScore(studentResults);
+                return `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h4>${student.name}</h4>
+                                <p>Class ${student.class}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 14px; color: #6b7280;">Average Score</p>
+                                <p style="font-size: 24px; font-weight: bold; color: #4f46e5;">${avgScore}%</p>
+                            </div>
+                        </div>
+                        ${studentResults.length > 0 ? `
+                            <div style="background: #f9fafb; border-radius: 8px; padding: 15px;">
+                                ${studentResults.map(result => {
+                                    const exam = exams.find(e => e.id === result.examId);
+                                    if (!exam) return '';
+                                    return `
+                                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span style="font-size: 14px;">${exam.title}</span>
+                                            <span style="font-size: 14px; font-weight: 500;">${result.score}/${result.totalMarks} (${Math.round((result.score / result.totalMarks) * 100)}%)</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : '<p style="text-align: center; color: #6b7280; padding: 20px;">No exam results yet</p>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadTeacherMessagesList(messages) {
+            const container = document.getElementById('teacherMessagesList');
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No messages</p>';
+                return;
+            }
+
+            container.innerHTML = messages.map(msg => `
+                <div class="list-item">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <h4>${msg.subject}</h4>
+                        <span style="font-size: 12px; color: #6b7280;">${msg.date}</span>
+                    </div>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 5px;">
+                        ${msg.from === currentUser.id ? 'To: Student/Parent' : 'From: Student/Parent'}
+                    </p>
+                    <p>${msg.content}</p>
+                </div>
+            `).join('');
+        }
+
+        function showCreateExam() {
+            examQuestions = [];
+            document.getElementById('createExamForm').reset();
+            document.getElementById('questionsList').innerHTML = '';
+            document.getElementById('questionCount').textContent = '0';
+            document.getElementById('createExamModal').classList.add('active');
+            switchTab('teacher', 'exams');
+        }
+
+        function addQuestion() {
+            const questionText = document.getElementById('questionText').value;
+            const options = [
+                document.getElementById('option0').value,
+                document.getElementById('option1').value,
+                document.getElementById('option2').value,
+                document.getElementById('option3').value
+            ];
+            const correctAnswer = parseInt(document.getElementById('correctAnswer').value);
+
+            if (!questionText || options.some(opt => !opt)) {
+                alert('Please fill in all question fields');
+                return;
+            }
+
+            const question = {
+                id: 'q' + Date.now(),
+                question: questionText,
+                options: options,
+                correctAnswer: correctAnswer
+            };
+
+            examQuestions.push(question);
+            updateQuestionsList();
+
+            // Clear form
+            document.getElementById('questionText').value = '';
+            document.getElementById('option0').value = '';
+            document.getElementById('option1').value = '';
+            document.getElementById('option2').value = '';
+            document.getElementById('option3').value = '';
+            document.getElementById('correctAnswer').value = '0';
+        }
+
+        function updateQuestionsList() {
+            document.getElementById('questionCount').textContent = examQuestions.length;
+            document.getElementById('questionsList').innerHTML = examQuestions.map((q, idx) => `
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <p style="font-weight: 500; margin-bottom: 10px;">${idx + 1}. ${q.question}</p>
+                            ${q.options.map((opt, optIdx) => `
+                                <p style="font-size: 14px; color: #6b7280; margin: 5px 0;">
+                                    ${String.fromCharCode(65 + optIdx)}. ${opt} ${optIdx === q.correctAnswer ? '<span style="color: #059669; font-weight: 600;">✓</span>' : ''}
+                                </p>
+                            `).join('')}
+                        </div>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeQuestion(${idx})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeQuestion(idx) {
+            examQuestions.splice(idx, 1);
+            updateQuestionsList();
+        }
+
+        document.getElementById('createExamForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (examQuestions.length === 0) {
+                alert('Please add at least one question');
+                return;
+            }
+
+            const exam = {
+                id: 'e' + Date.now(),
+                title: document.getElementById('examTitleInput').value,
+                subject: document.getElementById('examSubjectInput').value,
+                date: document.getElementById('examDateInput').value,
+                duration: parseInt(document.getElementById('examDurationInput').value),
+                totalMarks: parseInt(document.getElementById('examMarksInput').value),
+                class: document.getElementById('examClassInput').value,
+                teacherId: currentUser.id,
+                questions: examQuestions
+            };
+
+            const exams = JSON.parse(localStorage.getItem('exams'));
+            exams.push(exam);
+            localStorage.setItem('exams', JSON.stringify(exams));
+
+            closeCreateExamModal();
+            alert('Exam created successfully!');
+            loadTeacherDashboard();
+        });
+
+        function closeCreateExamModal() {
+            document.getElementById('createExamModal').classList.remove('active');
+            examQuestions = [];
+        }
+
+        function deleteExam(examId) {
+            if (!confirm('Are you sure you want to delete this exam?')) return;
+
+            const exams = JSON.parse(localStorage.getItem('exams'));
+            const filtered = exams.filter(e => e.id !== examId);
+            localStorage.setItem('exams', JSON.stringify(filtered));
+
+            loadTeacherDashboard();
+        }
+
+        // Parent Dashboard Functions
+        function loadParentDashboard() {
+            document.getElementById('parentName').textContent = currentUser.name;
+
+            const students = JSON.parse(localStorage.getItem('students'));
+            const child = students.find(s => s.id === currentUser.studentId);
+
+            document.getElementById('childName').textContent = child.name;
+            document.getElementById('childClass').textContent = child.class;
+            document.getElementById('parentChildName').textContent = child.name;
+            document.getElementById('parentChildClass').textContent = child.class;
+
+            const exams = JSON.parse(localStorage.getItem('exams')).filter(e => e.class === child.class);
+            const results = JSON.parse(localStorage.getItem('examResults')).filter(r => r.studentId === child.id);
+            const feePayments = JSON.parse(localStorage.getItem('feePayments')).filter(f => f.studentId === child.id);
+            const messages = JSON.parse(localStorage.getItem('messages')).filter(m => m.to === currentUser.id || m.from === currentUser.id);
+
+            const avgScore = calculateAverageScore(results);
+            const totalPaid = feePayments.filter(f => f.status === 'paid').reduce((sum, f) => sum + f.amount, 0);
+            const totalPending = feePayments.filter(f => f.status !== 'paid').reduce((sum, f) => sum + f.amount, 0);
+
+            // Overview stats
+            document.getElementById('parentAverageScore').textContent = avgScore + '%';
+            document.getElementById('parentOverallAverage').textContent = avgScore + '%';
+            document.getElementById('pendingFees').textContent = '$' + totalPending;
+            document.getElementById('parentMessages').textContent = messages.length;
+
+            // Fee stats
+            document.getElementById('totalPaid').textContent = '$' + totalPaid;
+            document.getElementById('totalPending').textContent = '$' + totalPending;
+            document.getElementById('totalFees').textContent = '$' + (totalPaid + totalPending);
+
+            // Recent results
+            loadParentRecentResults(results, exams);
+
+            // Performance list
+            loadParentPerformanceList(results, exams);
+
+            // Fee payments
+            loadFeePaymentsList(feePayments);
+
+            // Messages
+            loadParentMessagesList(messages);
+        }
+
+        function loadParentRecentResults(results, exams) {
+            const container = document.getElementById('parentRecentResults');
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No exam results yet</p>';
+                return;
+            }
+
+            const recent = results.slice(-3);
+            container.innerHTML = recent.map(result => {
+                const exam = exams.find(e => e.id === result.examId);
+                if (!exam) return '';
+                const percentage = (result.score / result.totalMarks) * 100;
+                const color = percentage >= 70 ? '#059669' : percentage >= 50 ? '#f59e0b' : '#dc2626';
+                return `
+                    <div style="background: #f9fafb; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="font-weight: 500;">${exam.title}</p>
+                            <p style="font-size: 14px; color: #6b7280;">${exam.subject}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 20px; font-weight: bold;">${result.score}/${result.totalMarks}</p>
+                            <p style="font-size: 14px; color: ${color}; font-weight: 600;">${percentage.toFixed(1)}%</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadParentPerformanceList(results, exams) {
+            const container = document.getElementById('parentPerformanceList');
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No exam results to display</p>';
+                return;
+            }
+
+            container.innerHTML = results.map(result => {
+                const exam = exams.find(e => e.id === result.examId);
+                if (!exam) return '';
+                const percentage = (result.score / result.totalMarks) * 100;
+                const grade = percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger';
+                const color = percentage >= 70 ? '#059669' : percentage >= 50 ? '#f59e0b' : '#dc2626';
+
+                return `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h4>${exam.title}</h4>
+                                <p>${exam.subject}</p>
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Submitted: ${new Date(result.submittedAt).toLocaleString()}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 24px; font-weight: bold;">${result.score}/${result.totalMarks}</p>
+                                <p style="font-size: 14px; color: ${color}; font-weight: 600;">${percentage.toFixed(1)}%</p>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                            <p style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">Performance:</p>
+                            <div class="answer-grid">
+                                ${result.answers.map((ans, idx) => {
+                                    const correct = ans === exam.questions[idx].correctAnswer;
+                                    return `<div class="answer-box ${correct ? 'correct' : 'incorrect'}">${correct ? '✓' : '✗'}</div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${grade}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadFeePaymentsList(feePayments) {
+            const container = document.getElementById('feePaymentsList');
+            container.innerHTML = feePayments.map(fee => {
+                const statusInfo = {
+                    paid: { badge: 'success', icon: '✓', text: 'Paid' },
+                    pending: { badge: 'warning', icon: '⏱️', text: 'Pending' },
+                    overdue: { badge: 'danger', icon: '✗', text: 'Overdue' }
+                };
+                const status = statusInfo[fee.status];
+
+                return `
+                    <div class="list-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <h4>${fee.month}</h4>
+                                <p>Due Date: ${fee.dueDate}</p>
+                                ${fee.paidDate ? `<p>Paid Date: ${fee.paidDate}</p>` : ''}
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 20px; font-weight: bold;">$${fee.amount}</p>
+                                <span class="badge ${status.badge}">${status.icon} ${status.text}</span>
+                            </div>
+                        </div>
+                        ${fee.status !== 'paid' ? `
+                            <button class="btn btn-small" style="width: 100%; margin-top: 10px;" onclick="simulatePayment('${fee.id}')">Pay Now</button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadParentMessagesList(messages) {
+            const container = document.getElementById('parentMessagesList');
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No messages</p>';
+                return;
+            }
+
+            container.innerHTML = messages.map(msg => `
+                <div class="list-item">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <h4>${msg.subject}</h4>
+                        <span style="font-size: 12px; color: #6b7280;">${msg.date}</span>
+                    </div>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 5px;">
+                        ${msg.from === currentUser.id ? 'To: Teacher' : 'From: Teacher'}
+                    </p>
+                    <p>${msg.content}</p>
+                </div>
+            `).join('');
+        }
+
+        function simulatePayment(feeId) {
+            alert('Payment simulation (demo mode). In production, this would integrate with a payment gateway.');
+        }
+
+        // Message Functions
+        function showSendMessage(sender) {
+            currentMessageSender = sender;
+            document.getElementById('messageForm').reset();
+
+            if (sender === 'teacher') {
+                const students = JSON.parse(localStorage.getItem('students'));
+                document.getElementById('recipientGroup').classList.remove('hidden');
+                document.getElementById('messageRecipient').innerHTML = 
+                    '<option value="">Select a student</option>' +
+                    students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            } else {
+                document.getElementById('recipientGroup').classList.add('hidden');
+            }
+
+            document.getElementById('messageModal').classList.add('active');
+        }
+
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let recipient;
+            if (currentMessageSender === 'teacher') {
+                recipient = document.getElementById('messageRecipient').value;
+                if (!recipient) {
+                    alert('Please select a recipient');
+                    return;
+                }
+            } else {
+                const teachers = JSON.parse(localStorage.getItem('teachers'));
+                recipient = teachers[0].id;
+            }
+
+            const message = {
+                id: 'm' + Date.now(),
+                from: currentUser.id,
+                to: recipient,
+                subject: document.getElementById('messageSubject').value,
+                content: document.getElementById('messageContent').value,
+                date: new Date().toISOString().split('T')[0],
+                read: false
+            };
+
+            const messages = JSON.parse(localStorage.getItem('messages'));
+            messages.push(message);
+            localStorage.setItem('messages', JSON.stringify(messages));
+
+            closeMessageModal();
+            alert('Message sent successfully!');
+
+            if (currentMessageSender === 'teacher') {
+                loadTeacherDashboard();
+            } else {
+                loadParentDashboard();
+            }
+        });
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').classList.remove('active');
+        }
+
+        // Check if user is already logged in
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            showDashboard(currentUser.userType);
+        }
+    </script>
+</body>
+</html>
