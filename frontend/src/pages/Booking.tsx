@@ -27,6 +27,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [standingCount, setStandingCount] = useState(0);
   const [boardingStationId, setBoardingStationId] = useState<number | null>(null);
   const [destinationStationId, setDestinationStationId] = useState<number | null>(null);
 
@@ -66,7 +67,22 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
     if (routeData) {
       setSelectedRouteId(routeData.id);
     }
-  }, [routeData]);
+    // Auto-select stations from bus selection
+    const preSelectedDestination = localStorage.getItem('preSelectedDestination');
+    const preSelectedBoarding = localStorage.getItem('preSelectedBoarding');
+    if (stations && preSelectedDestination && preSelectedBoarding) {
+      const destId = parseInt(preSelectedDestination, 10);
+      const boardId = parseInt(preSelectedBoarding, 10);
+      if (stations.find(s => s.id === destId)) {
+        setDestinationStationId(destId);
+      }
+      if (stations.find(s => s.id === boardId)) {
+        setBoardingStationId(boardId);
+      }
+      localStorage.removeItem('preSelectedDestination');
+      localStorage.removeItem('preSelectedBoarding');
+    }
+  }, [routeData, stations]);
 
   const handleStationContinue = () => {
     if (boardingStationId && destinationStationId) {
@@ -75,7 +91,12 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
   };
 
   const selectedFare = farePrices?.find((f) => f.fare_type === selectedFareType);
-  const totalPrice = selectedFare ? selectedFare.price_etb * quantity : 0;
+  const standingFare = farePrices?.find((f) => f.fare_type === 'standing');
+  const STANDING_PRICE = standingFare?.price_etb || 8;
+  const totalSeatsPrice = selectedFare ? selectedFare.price_etb * quantity : 0;
+  const totalStandingPrice = standingCount * STANDING_PRICE;
+  const totalPrice = totalSeatsPrice + totalStandingPrice;
+  const totalPassengers = quantity + standingCount;
 
   const handleFareSelect = (fareType: string) => {
     setSelectedFareType(fareType);
@@ -121,7 +142,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
@@ -226,6 +247,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
                         {fare.fare_type === 'senior' && '65+ with valid ID'}
                         {fare.fare_type === 'student' && 'With valid student ID'}
                         {fare.fare_type === 'child' && '5-12 years'}
+                        {fare.fare_type === 'standing' && 'No seat, stand in aisle'}
                       </p>
                     </div>
                     <span className="font-medium">{fare.price_etb} ETB</span>
@@ -238,12 +260,13 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
           )}
 
           <div className="mt-4">
-            <label className="text-sm font-medium">Quantity</label>
+            <label className="text-sm font-medium">Seated Passengers</label>
             <Select value={quantity.toString()} onValueChange={(v) => setQuantity(parseInt(v, 10))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="0">0 (standing only)</SelectItem>
                 <SelectItem value="1">1 passenger</SelectItem>
                 <SelectItem value="2">2 passengers</SelectItem>
                 <SelectItem value="3">3 passengers</SelectItem>
@@ -252,16 +275,20 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
             </Select>
           </div>
 
-          {selectedFareType && (
-            <div className="mt-4 pt-4 border-t">
+          {(quantity > 0 || standingCount > 0) && (
+            <div className="mt-4 p-3 bg-primary/10 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total</span>
+                <span className="font-medium">Total: {totalPassengers} passengers</span>
                 <span className="font-medium text-lg">{totalPrice} ETB</span>
               </div>
             </div>
           )}
 
-          <Button className="w-full mt-4" onClick={handleContinue} disabled={!selectedFareType}>
+          <Button 
+            className="w-full mt-4" 
+            onClick={handleContinue} 
+            disabled={!selectedFareType || (quantity === 0 && standingCount === 0)}
+          >
             Continue to Seat Selection
           </Button>
         </Card>
@@ -272,6 +299,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
           busId={schedule?.bus_id?.toString() || '1'}
           scheduleId={busId}
           requiredSeats={quantity}
+          standingCount={selectedFareType === 'standing' ? quantity : 0}
           onSeatsSelected={(seats) => {
             setSelectedSeats(seats);
             setBookingStep('payment-processing');

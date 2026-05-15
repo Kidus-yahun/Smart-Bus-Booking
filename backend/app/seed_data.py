@@ -165,26 +165,31 @@ def create_ethiopian_bus_data():
             {'route_id': 1, 'fare_type': 'senior', 'price_etb': 8.0},
             {'route_id': 1, 'fare_type': 'student', 'price_etb': 10.0},
             {'route_id': 1, 'fare_type': 'child', 'price_etb': 5.0},
+            {'route_id': 1, 'fare_type': 'standing', 'price_etb': 8.0},
             # Route AA-02 (Piazza to Merkato)
             {'route_id': 2, 'fare_type': 'adult', 'price_etb': 8.0},
             {'route_id': 2, 'fare_type': 'senior', 'price_etb': 4.0},
             {'route_id': 2, 'fare_type': 'student', 'price_etb': 6.0},
             {'route_id': 2, 'fare_type': 'child', 'price_etb': 3.0},
+            {'route_id': 2, 'fare_type': 'standing', 'price_etb': 4.0},
             # Route AA-03 (CMC to Meskel Square)
             {'route_id': 3, 'fare_type': 'adult', 'price_etb': 12.0},
             {'route_id': 3, 'fare_type': 'senior', 'price_etb': 6.0},
             {'route_id': 3, 'fare_type': 'student', 'price_etb': 8.0},
             {'route_id': 3, 'fare_type': 'child', 'price_etb': 4.0},
+            {'route_id': 3, 'fare_type': 'standing', 'price_etb': 6.0},
             # Route AA-04 (Kazanchis to Bole Airport)
             {'route_id': 4, 'fare_type': 'adult', 'price_etb': 13.0},
             {'route_id': 4, 'fare_type': 'senior', 'price_etb': 7.0},
             {'route_id': 4, 'fare_type': 'student', 'price_etb': 9.0},
             {'route_id': 4, 'fare_type': 'child', 'price_etb': 4.0},
+            {'route_id': 4, 'fare_type': 'standing', 'price_etb': 7.0},
             # Route AA-05 (Arat Kilo to Stadium)
             {'route_id': 5, 'fare_type': 'adult', 'price_etb': 6.0},
             {'route_id': 5, 'fare_type': 'senior', 'price_etb': 3.0},
             {'route_id': 5, 'fare_type': 'student', 'price_etb': 4.0},
             {'route_id': 5, 'fare_type': 'child', 'price_etb': 2.0},
+            {'route_id': 5, 'fare_type': 'standing', 'price_etb': 3.0},
         ]
 
         for fare_data in fare_prices_data:

@@ -198,6 +198,8 @@ export interface BusArrival {
   id: string;
   route_number: string;
   destination: string;
+  destination_station_id: number;
+  origin_station_id: number;
   arrival_time: string;
   minutes_away: number;
   occupancy: string;
@@ -269,6 +271,7 @@ export const ticketsApi = {
     boarding_station_id: number;
     destination_station_id: number;
     selected_seat_ids?: number[];
+    standing_count?: number;
   }): Promise<unknown> {
     return fetchApi<unknown>('/api/tickets/book', {
       method: 'POST',

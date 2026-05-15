@@ -237,12 +237,10 @@ async def get_upcoming_arrivals(
     """Get upcoming bus arrivals for a station."""
     now = datetime.now()
 
-    # Get schedules for the next few hours - simple query first
+    # Get all non-cancelled schedules
     schedules = (
         db.query(BusSchedule)
         .filter(
-            BusSchedule.departure_time >= now,
-            BusSchedule.departure_time <= now + timedelta(hours=4),
             BusSchedule.is_cancelled == False,
         )
         .order_by(BusSchedule.departure_time)
@@ -279,6 +277,8 @@ async def get_upcoming_arrivals(
             id=str(schedule.id),
             route_number=schedule.bus.route.route_number,
             destination=schedule.bus.route.destination_station.name,
+            destination_station_id=schedule.bus.route.destination_station_id,
+            origin_station_id=schedule.bus.route.origin_station_id,
             arrival_time=schedule.departure_time.strftime('%I:%M %p'),
             minutes_away=minutes_away,
             occupancy=occupancy,

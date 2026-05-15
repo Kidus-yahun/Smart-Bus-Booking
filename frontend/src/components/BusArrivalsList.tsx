@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 
 interface BusArrivalsListProps {
-  onSelectBus: (busId: string) => void;
+  onSelectBus: (busId: string, destinationStationId?: number, boardingStationId?: number) => void;
 }
 
 export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
@@ -33,7 +33,8 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
 
   const handleBookFromDetails = () => {
     if (selectedBusForDetails) {
-      onSelectBus(selectedBusForDetails);
+      const arrival = arrivals?.find((a) => a.id === selectedBusForDetails);
+      onSelectBus(selectedBusForDetails, arrival?.destination_station_id, arrival?.origin_station_id);
       handleCloseDetails();
     }
   };
@@ -138,7 +139,7 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
             <div className="mt-3 pt-3 border-t">
               <Button
                 className="w-full bg-black hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-                onClick={() => onSelectBus(arrival.id)}
+                onClick={() => onSelectBus(arrival.id, arrival.destination_station_id, arrival.origin_station_id)}
               >
                 Buy Ticket
               </Button>

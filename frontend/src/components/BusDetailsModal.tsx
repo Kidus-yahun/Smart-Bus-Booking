@@ -81,9 +81,9 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-[100] flex items-end" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50" style={{ zIndex: 999 }} onClick={onClose}>
       <div
-        className="bg-background w-full max-h-[90vh] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300"
+        className="bg-background w-full max-h-[90vh] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300" style={{ zIndex: 1000 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

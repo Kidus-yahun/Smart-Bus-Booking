@@ -38,8 +38,13 @@ function MainApp() {
   const [showMap, setShowMap] = useState(false);
   const { location: userLocation } = useUserLocation();
 
-  const handleSelectBus = (busId: string) => {
+  const handleSelectBus = (busId: string, destinationStationId?: number, boardingStationId?: number) => {
     setSelectedBusId(busId);
+    // Store pre-selected stations for booking
+    if (destinationStationId && boardingStationId) {
+      localStorage.setItem('preSelectedDestination', destinationStationId.toString());
+      localStorage.setItem('preSelectedBoarding', boardingStationId.toString());
+    }
     setCurrentState('booking');
   };
 
@@ -111,11 +116,11 @@ function MainApp() {
   }
 
   return (
-    <div className="min-h-screen bg-background safe-area-top pb-14">
+    <div className="min-h-screen bg-background safe-area-top pb-16">
       <div className="status-bar-spacer"></div>
       <Header onNavigate={(screen) => setCurrentState(screen)} />
 
-      <div className="mobile-container mx-auto px-4 py-2 max-w-md space-y-4 mobile-scroll pb-20">
+      <div className="mobile-container mx-auto px-4 py-2 max-w-md space-y-4 mobile-scroll pb-32 overflow-visible">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentState}

@@ -14,7 +14,7 @@ export function BottomNav({ currentScreen, onNavigate }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 w-full h-14 bg-background border-t border-border z-50">
+    <nav className="fixed bottom-0 w-full h-16 bg-background border-t border-border z-40">
       <div className="flex items-center h-full">
         {navItems.map((item) => {
           const isActive = currentScreen === item.id;

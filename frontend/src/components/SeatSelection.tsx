@@ -19,6 +19,7 @@ interface SeatSelectionProps {
   busId: string;
   scheduleId: string;
   requiredSeats: number;
+  standingCount: number;
   onSeatsSelected: (selectedSeats: string[]) => void;
   onBack: () => void;
 }
@@ -27,11 +28,13 @@ export function SeatSelection({
   busId,
   scheduleId,
   requiredSeats,
+  standingCount,
   onSeatsSelected,
   onBack,
 }: SeatSelectionProps) {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [selectedStanding, setSelectedStanding] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'seat-plan' | 'info' | 'review'>('seat-plan');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -143,14 +146,23 @@ export function SeatSelection({
 
     setSelectedSeats((prev) => {
       if (prev.includes(seatId)) {
-        // Deselect seat
         return prev.filter((id) => id !== seatId);
       } else if (prev.length < requiredSeats) {
-        // Select seat if we haven't reached the limit
         return [...prev, seatId];
       } else {
-        // Replace the first selected seat with new selection
         return [...prev.slice(1), seatId];
+      }
+    });
+  };
+
+  const handleStandingClick = (spotId: string) => {
+    setSelectedStanding((prev) => {
+      if (prev.includes(spotId)) {
+        return prev.filter((id) => id !== spotId);
+      } else if (prev.length < standingCount) {
+        return [...prev, spotId];
+      } else {
+        return [...prev.slice(1), spotId];
       }
     });
   };
@@ -206,29 +218,62 @@ export function SeatSelection({
 
     return (
       <div className="bg-white rounded-lg p-4 max-h-96 overflow-y-auto">
+        {/* Legend */}
+        <div className="flex justify-center gap-4 mb-4 text-xs">
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300"></div>
+            <span>Available</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded bg-green-500"></div>
+            <span>Selected</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded bg-red-500"></div>
+            <span>Occupied</span>
+          </div>
+        </div>
+
         {/* Driver area */}
-        <div className="flex justify-center mb-6">
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full">
-            <Car className="w-6 h-6 text-gray-600" />
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center justify-center w-12 h-8 bg-gray-200 rounded-full">
+            <Car className="w-4 h-4 text-gray-600" />
           </div>
         </div>
 
         {/* Seat layout */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {rows.map((row) => {
             const rowSeats = seats.filter((s) => s.row === row);
             const leftSeats = rowSeats.filter((s) => s.column === 'A' || s.column === 'B');
             const rightSeats = rowSeats.filter((s) => s.column === 'C' || s.column === 'D');
+            const hasStanding = row <= 10 && standingCount > 0;
+            const standingSpotId = `S${row}`;
+            const isStandingSelected = selectedStanding.includes(standingSpotId);
 
             return (
-              <div key={row} className="flex items-center justify-between">
+              <div key={row} className="flex items-center justify-center gap-2">
                 {/* Left side seats */}
                 <div className="flex gap-1">{leftSeats.map((seat) => getSeatIcon(seat))}</div>
 
-                {/* Aisle with row number */}
-                <div className="w-8 flex items-center justify-center text-xs text-muted-foreground">
-                  {row}
-                </div>
+                {/* Middle - Standing spot */}
+                {hasStanding ? (
+                  <button
+                    onClick={() => handleStandingClick(standingSpotId)}
+                    className={`
+                      w-8 h-8 rounded-full flex items-center justify-center text-lg
+                      transition-all duration-200
+                      ${isStandingSelected 
+                        ? 'bg-green-500 border-2 border-green-600 text-white' 
+                        : 'bg-orange-300 border-2 border-orange-400 text-orange-700 hover:bg-orange-400'}
+                    `}
+                    title="Standing position"
+                  >
+                    🧍
+                  </button>
+                ) : (
+                  <div className="w-8"></div>
+                )}
 
                 {/* Right side seats */}
                 <div className="flex gap-1">{rightSeats.map((seat) => getSeatIcon(seat))}</div>
@@ -236,6 +281,12 @@ export function SeatSelection({
             );
           })}
         </div>
+
+        {standingCount > 0 && (
+          <div className="mt-3 p-2 bg-orange-50 rounded-lg text-center text-sm text-orange-800">
+            🧍 Standing: {standingCount - selectedStanding.length} spots remaining
+          </div>
+        )}
       </div>
     );
   };
@@ -417,7 +468,7 @@ export function SeatSelection({
       )}
 
       {/* Content */}
-      <div className="min-h-96">
+      <div className="min-h-64 pb-24">
         {activeTab === 'seat-plan' && renderSeatMap()}
         {activeTab === 'info' && renderInfo()}
         {activeTab === 'review' && renderReview()}
@@ -428,14 +479,16 @@ export function SeatSelection({
         <Button
           className="w-full"
           size="lg"
-          disabled={selectedSeats.length !== requiredSeats}
+          disabled={selectedSeats.length === 0 && selectedStanding.length === 0}
           onClick={() => onSeatsSelected(selectedSeats)}
         >
-          {selectedSeats.length === 0
-            ? `Select ${requiredSeats} seat${requiredSeats !== 1 ? 's' : ''} to continue`
-            : selectedSeats.length < requiredSeats
-              ? `Select ${requiredSeats - selectedSeats.length} more seat${requiredSeats - selectedSeats.length !== 1 ? 's' : ''}`
-              : `Continue with seats ${selectedSeats.join(', ')}`}
+          {selectedSeats.length === 0 && selectedStanding.length === 0
+            ? `Select seat or standing to continue`
+            : selectedSeats.length > 0 && selectedStanding.length > 0
+              ? `Continue: ${selectedSeats.length} seats + ${selectedStanding.length} 🧍`
+              : selectedSeats.length > 0
+                ? `Continue with ${selectedSeats.join(', ')}`
+                : `Continue with ${selectedStanding.length} 🧍 standing`}
         </Button>
       </div>
     </div>
