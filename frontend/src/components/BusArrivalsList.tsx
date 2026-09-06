@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Accessibility, Clock, MoreVertical } from 'lucide-react';
 import { useState } from 'react';
 import { busesApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
 import { BusDetailsModal } from './BusDetailsModal';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -11,6 +12,7 @@ interface BusArrivalsListProps {
 }
 
 export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
+  const { t } = useLanguage();
   const {
     data: arrivals,
     isLoading,
@@ -89,7 +91,7 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
   if (error) {
     return (
       <Card className="p-4">
-        <p className="text-red-500">Failed to load bus arrivals. Please try again.</p>
+        <p className="text-red-500">{t('Failed to load bus arrivals. Please try again.')}</p>
       </Card>
     );
   }
@@ -97,8 +99,8 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Upcoming Buses</h2>
-        <span className="text-sm text-muted-foreground">{arrivals?.length || 0} buses</span>
+        <h2 className="text-lg font-semibold">{t('Upcoming Buses')}</h2>
+        <span className="text-sm text-muted-foreground">{arrivals?.length || 0} {t('buses')}</span>
       </div>
 
       {arrivals && arrivals.length > 0 ? (
@@ -110,21 +112,21 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
                   <span className="font-semibold">{arrival.route_number}</span>
                   {arrival.accessible && <Accessibility className="h-4 w-4 text-green-500" />}
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">to {arrival.destination}</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('to {0}', arrival.destination)}</p>
                 <div className="flex items-center gap-4 mt-2 text-sm">
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
                     <span>{arrival.arrival_time}</span>
                   </div>
                   <span className="text-muted-foreground">
-                    {arrival.minutes_away > 0 ? `${arrival.minutes_away} min` : 'Arriving now'}
+                    {arrival.minutes_away > 0 ? t('{0} min', arrival.minutes_away) : t('Arriving now')}
                   </span>
                   <span className={getOccupancyColor(arrival.occupancy)}>
                     {arrival.occupancy === 'low'
-                      ? 'Seats available'
+                      ? t('Seats available')
                       : arrival.occupancy === 'medium'
-                        ? 'Filling up'
-                        : 'Almost full'}
+                        ? t('Filling up')
+                        : t('Almost full')}
                   </span>
                 </div>
               </div>
@@ -141,14 +143,14 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
                 className="w-full bg-black hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                 onClick={() => onSelectBus(arrival.id, arrival.destination_station_id, arrival.origin_station_id)}
               >
-                Buy Ticket
+                {t('Buy Ticket')}
               </Button>
             </div>
           </Card>
         ))
       ) : (
         <Card className="p-8 text-center">
-          <p className="text-muted-foreground">No buses arriving soon</p>
+          <p className="text-muted-foreground">{t('No buses arriving soon')}</p>
         </Card>
       )}
 
@@ -157,9 +159,9 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
           busDetails={{
             id: selectedBusForDetails,
             busNumber: arrivals?.find((a) => a.id === selectedBusForDetails)?.route_number || '',
-            route: arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || '',
-            from: 'Addis Ababa',
-            to: arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || '',
+            route: t(arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || ''),
+            from: t('Addis Ababa'),
+            to: t(arrivals?.find((a) => a.id === selectedBusForDetails)?.destination || ''),
             estimatedArrival:
               arrivals?.find((a) => a.id === selectedBusForDetails)?.minutes_away || 0,
             departureTime:
@@ -172,12 +174,12 @@ export function BusArrivalsList({ onSelectBus }: BusArrivalsListProps) {
             accessibility: arrivals?.find((a) => a.id === selectedBusForDetails)?.accessible || false,
             busType: 'standard',
             driverInfo: {
-              name: 'Driver',
+              name: t('Driver'),
               rating: 4.8,
-              experience: '5 years',
+              experience: t('5 years'),
             },
-            routeStops: ['Station 1', 'Station 2', 'Station 3'],
-            nextStops: [{ name: 'Stop 1', eta: '5 min' }],
+            routeStops: [t('Station 1'), t('Station 2'), t('Station 3')],
+            nextStops: [{ name: t('Stop 1'), eta: t('{0} min', 5) }],
           }}
           onClose={handleCloseDetails}
           onBookTicket={handleBookFromDetails}

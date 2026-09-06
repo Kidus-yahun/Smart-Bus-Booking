@@ -1,5 +1,7 @@
 import { Bus, Clock, MapPin, Navigation, Phone, Star, Users, Wifi, X, Zap } from 'lucide-react';
 import { useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { capitalize } from '../i18n/translations';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -36,6 +38,7 @@ interface BusDetailsModalProps {
 }
 
 export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetailsModalProps) {
+  const { t } = useLanguage();
   // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -53,9 +56,9 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
   const getOccupancyLabel = () => {
     const percentage = (busDetails.currentOccupancy / busDetails.capacity) * 100;
-    if (percentage < 50) return 'Available seats';
-    if (percentage < 80) return 'Some seats';
-    return 'Standing room';
+    if (percentage < 50) return t('Available seats');
+    if (percentage < 80) return t('Some seats');
+    return t('Standing room');
   };
 
   const getAmenityIcon = (amenity: string) => {
@@ -108,14 +111,14 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
           <div className="flex items-center gap-2">
             <Badge className={getBusTypeColor()}>
-              {busDetails.busType.charAt(0).toUpperCase() + busDetails.busType.slice(1)}
+              {t(capitalize(busDetails.busType))}
             </Badge>
             {busDetails.accessibility && (
               <Badge
                 variant="secondary"
                 className="bg-primary-foreground/20 text-primary-foreground"
               >
-                ♿ Accessible
+                ♿ {t('Accessible')}
               </Badge>
             )}
             <div className="flex items-center gap-1 ml-auto">
@@ -129,7 +132,7 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
         <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
           {/* Route Information */}
           <Card className="p-4 mb-4">
-            <h3 className="font-medium mb-3">Route Information</h3>
+            <h3 className="font-medium mb-3">{t('Route Information')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -146,12 +149,12 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Departure: {busDetails.departureTime}</span>
+                  <span className="text-sm">{t('Departure: {0}', busDetails.departureTime)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-green-600" />
                   <span className="text-sm text-green-600">
-                    ETA: {busDetails.estimatedArrival} min
+                    {t('ETA: {0} min', busDetails.estimatedArrival)}
                   </span>
                 </div>
               </div>
@@ -160,14 +163,14 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
           {/* Occupancy Status */}
           <Card className="p-4 mb-4">
-            <h3 className="font-medium mb-3">Current Status</h3>
+            <h3 className="font-medium mb-3">{t('Current Status')}</h3>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Users className={`w-4 h-4 ${getOccupancyColor()}`} />
                 <span className={`font-medium ${getOccupancyColor()}`}>{getOccupancyLabel()}</span>
               </div>
               <span className="text-sm text-muted-foreground">
-                {busDetails.currentOccupancy}/{busDetails.capacity} passengers
+                {busDetails.currentOccupancy}/{busDetails.capacity} {t('passengers')}
               </span>
             </div>
             <div className="w-full bg-muted rounded-full h-2">
@@ -186,7 +189,7 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
           {/* Next Stops */}
           <Card className="p-4 mb-4">
-            <h3 className="font-medium mb-3">Next Stops</h3>
+            <h3 className="font-medium mb-3">{t('Next Stops')}</h3>
             <div className="space-y-2">
               {busDetails.nextStops.map((stop, index) => (
                 <div key={index} className="flex items-center justify-between">
@@ -206,13 +209,13 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
           {/* Amenities */}
           <Card className="p-4 mb-4">
-            <h3 className="font-medium mb-3">Bus Amenities</h3>
+            <h3 className="font-medium mb-3">{t('Bus Amenities')}</h3>
             <div className="grid grid-cols-2 gap-3">
               {busDetails.amenities.map((amenity) => (
                 <div key={amenity} className="flex items-center gap-2">
                   <span className="text-lg">{getAmenityIcon(amenity)}</span>
                   <span className="text-sm capitalize">
-                    {amenity === 'ac' ? 'Air Conditioning' : amenity}
+                    {amenity === 'ac' ? t('Air Conditioning') : t(amenity)}
                   </span>
                 </div>
               ))}
@@ -221,12 +224,12 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
 
           {/* Driver Information */}
           <Card className="p-4 mb-4">
-            <h3 className="font-medium mb-3">Driver Information</h3>
+            <h3 className="font-medium mb-3">{t('Driver Information')}</h3>
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">{busDetails.driverInfo.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {busDetails.driverInfo.experience} experience
+                  {t('{0} experience', busDetails.driverInfo.experience)}
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -240,12 +243,12 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
           <Card className="p-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium">Ticket Price</h3>
-                <p className="text-sm text-muted-foreground">Per passenger</p>
+                <h3 className="font-medium">{t('Ticket Price')}</h3>
+                <p className="text-sm text-muted-foreground">{t('Per passenger')}</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-medium">{busDetails.price} ETB</div>
-                <div className="text-sm text-muted-foreground">One way</div>
+                <div className="text-2xl font-medium">{t('{0} ETB', busDetails.price)}</div>
+                <div className="text-sm text-muted-foreground">{t('One way')}</div>
               </div>
             </div>
           </Card>
@@ -256,10 +259,10 @@ export function BusDetailsModal({ busDetails, onClose, onBookTicket }: BusDetail
           <div className="flex gap-3">
             <Button variant="outline" className="flex-1">
               <Navigation className="w-4 h-4 mr-2" />
-              Track Live
+              {t('Track Live')}
             </Button>
             <Button className="flex-1" onClick={onBookTicket}>
-              Buy Ticket - {busDetails.price} ETB
+              {t('Buy Ticket - {0} ETB', busDetails.price)}
             </Button>
           </div>
         </div>

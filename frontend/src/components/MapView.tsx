@@ -1,15 +1,17 @@
 import { Map, MapPin, Navigation } from 'lucide-react';
 import { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 
 export function MapView() {
+  const { t } = useLanguage();
   const [mapMode, setMapMode] = useState<'simple' | 'satellite'>('simple');
 
   return (
     <div>
       {/* Map Header */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-medium">Nearby Stations</h3>
+        <h3 className="font-medium">{t('Nearby Stations')}</h3>
         <div className="flex items-center gap-2">
           <Button
             variant={mapMode === 'simple' ? 'default' : 'outline'}
@@ -18,11 +20,11 @@ export function MapView() {
             className="flex items-center gap-2 text-sm"
           >
             <Map className="w-4 h-4" />
-            Simple Map
+            {t('Simple Map')}
           </Button>
           <Button variant="outline" size="sm" className="flex items-center gap-2 text-sm">
             <Navigation className="w-4 h-4" />
-            Center
+            {t('Center')}
           </Button>
         </div>
       </div>
@@ -87,7 +89,7 @@ export function MapView() {
 
         {/* Location Text */}
         <div className="absolute top-3 left-3 text-sm text-muted-foreground">
-          📍 Addis Ababa - Drag to explore
+          📍 {t('Addis Ababa - Drag to explore')}
         </div>
 
         {/* Zoom Controls */}
@@ -110,7 +112,7 @@ export function MapView() {
 
         {/* Zoom Level Indicator */}
         <div className="absolute bottom-3 right-3 bg-white/90 px-2 py-1 rounded text-xs">
-          Zoom: 12
+          {t('Zoom: 12')}
         </div>
 
         {/* Current Location Pin - Blue dot in center */}

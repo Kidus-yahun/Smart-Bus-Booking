@@ -188,6 +188,15 @@ html {
   font-size: var(--font-size);
 }
 
+/* Amharic (Ethiopic) font support */
+html[lang='am'] {
+  font-family: 'Noto Sans Ethiopic', var(--default-font-family, ui-sans-serif, system-ui, sans-serif);
+}
+
+html[lang='am'] body {
+  font-family: 'Noto Sans Ethiopic', var(--default-font-family, ui-sans-serif, system-ui, sans-serif);
+}
+
 /* Leaflet map marker styles */
 .marker-inner {
   border-radius: 50%;

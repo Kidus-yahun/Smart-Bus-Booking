@@ -7,6 +7,7 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface UserProfileProps {
   onBack: () => void;
@@ -14,6 +15,7 @@ interface UserProfileProps {
 
 export function Profile({ onBack: _onBack }: UserProfileProps) {
   const { user, updateProfile } = useAuth();
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -80,10 +82,10 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
 
           <div className="flex-1">
             <h2 className="text-xl font-medium">{user.name}</h2>
-            <p className="text-muted-foreground">SmartBus Member</p>
+            <p className="text-muted-foreground">{t('SmartBus Member')}</p>
             <div className="flex items-center gap-1 mt-1">
               <SmartBusLogo size={16} />
-              <span className="text-sm text-muted-foreground">Member since 2024</span>
+              <span className="text-sm text-muted-foreground">{t('Member since 2024')}</span>
             </div>
           </div>
         </div>
@@ -93,7 +95,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
       <div className="p-4 space-y-6">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium">Personal Information</h3>
+            <h3 className="text-lg font-medium">{t('Personal Information')}</h3>
             {!isEditing ? (
               <Button
                 variant="outline"
@@ -102,7 +104,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
                 className="flex items-center gap-2"
               >
                 <Edit3 className="w-4 h-4" />
-                Edit
+                {t('Edit')}
               </Button>
             ) : (
               <div className="flex items-center gap-2">
@@ -116,7 +118,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
                   className="flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
-                  Save
+                  {t('Save')}
                 </Button>
               </div>
             )}
@@ -124,7 +126,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">{t('Full Name')}</Label>
               <div className="relative mt-1">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -138,7 +140,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t('Email Address')}</Label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -153,7 +155,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">{t('Phone Number')}</Label>
               <div className="relative mt-1">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -168,7 +170,7 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
             </div>
 
             <div>
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">{t('Location')}</Label>
               <div className="relative mt-1">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -185,34 +187,34 @@ export function Profile({ onBack: _onBack }: UserProfileProps) {
 
         {/* Stats Card */}
         <Card className="p-6">
-          <h3 className="text-lg font-medium mb-4">Travel Statistics</h3>
+          <h3 className="text-lg font-medium mb-4">{t('Travel Statistics')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="text-2xl font-medium">12</div>
-              <div className="text-sm text-muted-foreground">Total Trips</div>
+              <div className="text-sm text-muted-foreground">{t('Total Trips')}</div>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="text-2xl font-medium">2,340</div>
-              <div className="text-sm text-muted-foreground">ETB Saved</div>
+              <div className="text-sm text-muted-foreground">{t('ETB Saved')}</div>
             </div>
           </div>
         </Card>
 
         {/* Quick Actions */}
         <Card className="p-6">
-          <h3 className="text-lg font-medium mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-medium mb-4">{t('Quick Actions')}</h3>
           <div className="space-y-3">
             <Button variant="outline" className="w-full justify-start">
               <User className="w-4 h-4 mr-3" />
-              Change Password
+              {t('Change Password')}
             </Button>
             <Button variant="outline" className="w-full justify-start">
               <Mail className="w-4 h-4 mr-3" />
-              Email Preferences
+              {t('Email Preferences')}
             </Button>
             <Button variant="outline" className="w-full justify-start">
               <Phone className="w-4 h-4 mr-3" />
-              SMS Notifications
+              {t('SMS Notifications')}
             </Button>
           </div>
         </Card>

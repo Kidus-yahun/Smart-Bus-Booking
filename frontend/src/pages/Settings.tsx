@@ -22,6 +22,7 @@ import {
 } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SettingsProps {
   onBack: () => void;
@@ -29,6 +30,7 @@ interface SettingsProps {
 
 export function Settings({ onBack: _onBack }: SettingsProps) {
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const [notifications, setNotifications] = useState({
     push: true,
     email: true,
@@ -36,7 +38,6 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
     busUpdates: true,
     promotions: false,
   });
-  const [language, setLanguage] = useState('en');
 
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({
@@ -78,34 +79,32 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
 
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
-      <h2 className="text-xl font-semibold">Settings</h2>
+      <h2 className="text-xl font-semibold">{t('Settings')}</h2>
 
       {/* Appearance */}
       <Card>
         <div className="p-4 border-b">
-          <h2 className="font-medium">Appearance</h2>
+          <h2 className="font-medium">{t('Appearance')}</h2>
         </div>
         <SettingsItem
           icon={theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          title="Theme"
-          description={`Currently using ${theme} mode`}
+          title={t('Theme')}
+          description={t('Currently using {0} mode', theme)}
         >
           <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
         </SettingsItem>
         <SettingsItem
           icon={<Globe className="w-5 h-5" />}
-          title="Language"
-          description="Choose your preferred language"
+          title={t('Language')}
+          description={t('Choose your preferred language')}
         >
-          <Select value={language} onValueChange={setLanguage}>
+          <Select value={language} onValueChange={(v) => setLanguage(v as 'en' | 'am')}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="am">አማርኛ (Amharic)</SelectItem>
-              <SelectItem value="or">Oromiffa</SelectItem>
-              <SelectItem value="ti">ትግርኛ (Tigrinya)</SelectItem>
+              <SelectItem value="en">{t('English')}</SelectItem>
+              <SelectItem value="am">{t('አማርኛ (Amharic)')}</SelectItem>
             </SelectContent>
           </Select>
         </SettingsItem>
@@ -114,12 +113,12 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
       {/* Notifications */}
       <Card>
         <div className="p-4 border-b">
-          <h2 className="font-medium">Notifications</h2>
+          <h2 className="font-medium">{t('Notifications')}</h2>
         </div>
         <SettingsItem
           icon={<Bell className="w-5 h-5" />}
-          title="Push Notifications"
-          description="Receive notifications on your device"
+          title={t('Push Notifications')}
+          description={t('Receive notifications on your device')}
         >
           <Switch
             checked={notifications.push}
@@ -128,8 +127,8 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
         </SettingsItem>
         <SettingsItem
           icon={<Bell className="w-5 h-5" />}
-          title="Email Notifications"
-          description="Receive booking confirmations via email"
+          title={t('Email Notifications')}
+          description={t('Receive booking confirmations via email')}
         >
           <Switch
             checked={notifications.email}
@@ -138,8 +137,8 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
         </SettingsItem>
         <SettingsItem
           icon={<Phone className="w-5 h-5" />}
-          title="SMS Notifications"
-          description="Receive SMS updates about your trips"
+          title={t('SMS Notifications')}
+          description={t('Receive SMS updates about your trips')}
         >
           <Switch
             checked={notifications.sms}
@@ -148,8 +147,8 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
         </SettingsItem>
         <SettingsItem
           icon={<Bell className="w-5 h-5" />}
-          title="Bus Updates"
-          description="Get real-time bus location updates"
+          title={t('Bus Updates')}
+          description={t('Get real-time bus location updates')}
         >
           <Switch
             checked={notifications.busUpdates}
@@ -158,8 +157,8 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
         </SettingsItem>
         <SettingsItem
           icon={<Bell className="w-5 h-5" />}
-          title="Promotions"
-          description="Receive offers and promotional content"
+          title={t('Promotions')}
+          description={t('Receive offers and promotional content')}
         >
           <Switch
             checked={notifications.promotions}
@@ -171,24 +170,24 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
       {/* Privacy & Security */}
       <Card>
         <div className="p-4 border-b">
-          <h2 className="font-medium">Privacy & Security</h2>
+          <h2 className="font-medium">{t('Privacy & Security')}</h2>
         </div>
         <SettingsItem
           icon={<Shield className="w-5 h-5" />}
-          title="Privacy Policy"
-          description="View our privacy policy"
+          title={t('Privacy Policy')}
+          description={t('View our privacy policy')}
           onClick={() => {}}
         />
         <SettingsItem
           icon={<Shield className="w-5 h-5" />}
-          title="Terms of Service"
-          description="View terms and conditions"
+          title={t('Terms of Service')}
+          description={t('View terms and conditions')}
           onClick={() => {}}
         />
         <SettingsItem
           icon={<Shield className="w-5 h-5" />}
-          title="Data & Storage"
-          description="Manage your data preferences"
+          title={t('Data & Storage')}
+          description={t('Manage your data preferences')}
           onClick={() => {}}
         />
       </Card>
@@ -196,24 +195,24 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
       {/* Support */}
       <Card>
         <div className="p-4 border-b">
-          <h2 className="font-medium">Support</h2>
+          <h2 className="font-medium">{t('Support')}</h2>
         </div>
         <SettingsItem
           icon={<HelpCircle className="w-5 h-5" />}
-          title="Help Center"
-          description="Get help with using SmartBus"
+          title={t('Help Center')}
+          description={t('Get help with using SmartBus')}
           onClick={() => {}}
         />
         <SettingsItem
           icon={<Phone className="w-5 h-5" />}
-          title="Contact Support"
-          description="Reach out to our support team"
+          title={t('Contact Support')}
+          description={t('Reach out to our support team')}
           onClick={() => {}}
         />
         <SettingsItem
           icon={<Info className="w-5 h-5" />}
-          title="About SmartBus"
-          description="Version 1.0.0"
+          title={t('About SmartBus')}
+          description={t('Version 1.0.0')}
           onClick={() => {}}
         />
       </Card>
@@ -221,19 +220,19 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
       {/* Ethiopian Localization */}
       <Card>
         <div className="p-4 border-b">
-          <h2 className="font-medium">Ethiopian Features</h2>
+          <h2 className="font-medium">{t('Ethiopian Features')}</h2>
         </div>
         <SettingsItem
           icon={<Globe className="w-5 h-5" />}
-          title="Ethiopian Calendar"
-          description="Show dates in Ethiopian calendar"
+          title={t('Ethiopian Calendar')}
+          description={t('Show dates in Ethiopian calendar')}
         >
           <Switch defaultChecked={false} />
         </SettingsItem>
         <SettingsItem
           icon={<Globe className="w-5 h-5" />}
-          title="Local Time Format"
-          description="Use Ethiopian time format"
+          title={t('Local Time Format')}
+          description={t('Use Ethiopian time format')}
         >
           <Switch defaultChecked={false} />
         </SettingsItem>
@@ -241,8 +240,8 @@ export function Settings({ onBack: _onBack }: SettingsProps) {
 
       {/* App Info */}
       <div className="text-center text-sm text-muted-foreground space-y-1">
-        <p>SmartBus Ethiopia v1.0.0</p>
-        <p>Made with ❤️ in Addis Ababa</p>
+        <p>{t('SmartBus Ethiopia v1.0.0')}</p>
+        <p>{t('Made with ❤️ in Addis Ababa')}</p>
       </div>
     </div>
   );

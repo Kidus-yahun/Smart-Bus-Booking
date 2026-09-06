@@ -3,6 +3,7 @@ import { Bus, MapPin, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { busesApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Sheet, SheetContent } from './ui/sheet';
 import 'leaflet/dist/leaflet.css';
@@ -36,6 +37,7 @@ function MapUpdater({ center }: { center: [number, number] }) {
 }
 
 export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetProps) {
+  const { t } = useLanguage();
   const [stations, setStations] = useState<Station[]>([]);
   const [busPositions, setBusPositions] = useState<BusPosition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,7 +125,7 @@ export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetPr
           <div className="flex items-center justify-between p-4 border-b bg-muted/30 rounded-t-xl">
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-lg">Nearby Buses</h3>
+              <h3 className="font-semibold text-lg">{t('Nearby Buses')}</h3>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-muted">
               <X className="h-5 w-5" />
@@ -151,7 +153,7 @@ export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetPr
 
               {userLocation && (
                 <Marker position={[userLocation.lat, userLocation.lng]} icon={userMarkerIcon}>
-                  <Popup>Your location</Popup>
+                  <Popup>{t('Your location')}</Popup>
                 </Marker>
               )}
 
@@ -165,7 +167,7 @@ export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetPr
                     <div className="p-1">
                       <div className="flex items-center gap-1 font-medium">
                         <MapPin className="h-4 w-4" />
-                        {station.name}
+                        {t(station.name)}
                       </div>
                     </div>
                   </Popup>
@@ -178,7 +180,7 @@ export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetPr
                     <div className="p-1">
                       <div className="flex items-center gap-1 font-medium">
                         <Bus className="h-4 w-4" />
-                        Bus {bus.bus_id}
+                        {t('Bus {0}', bus.bus_id)}
                       </div>
                     </div>
                   </Popup>
@@ -188,28 +190,28 @@ export function MapBottomSheet({ open, onClose, userLocation }: MapBottomSheetPr
           </div>
 
           <div className="p-4 border-t bg-muted/20">
-            <p className="text-xs font-medium text-muted-foreground mb-3">Map Legend</p>
+            <p className="text-xs font-medium text-muted-foreground mb-3">{t('Map Legend')}</p>
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-1">
                 <div 
                   className="w-4 h-4 rounded-full border-2 border-white shadow-md" 
                   style={{ backgroundColor: '#3b82f6' }}
                 />
-                <span className="text-xs font-medium">Your Location</span>
+                <span className="text-xs font-medium">{t('Your Location')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div 
                   className="w-4 h-4 rounded-full border-2 border-white shadow-md" 
                   style={{ backgroundColor: '#f97316' }}
                 />
-                <span className="text-xs font-medium">Bus Stations</span>
+                <span className="text-xs font-medium">{t('Bus Stations')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div 
                   className="w-4 h-4 rounded-full border-2 border-white shadow-md" 
                   style={{ backgroundColor: '#10b981' }}
                 />
-                <span className="text-xs font-medium">Live Buses</span>
+                <span className="text-xs font-medium">{t('Live Buses')}</span>
               </div>
             </div>
           </div>

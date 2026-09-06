@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -13,6 +14,7 @@ interface SignupFormProps {
 
 export function Register({ onSwitchToLogin }: SignupFormProps) {
   const { signup, isLoading } = useAuth();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,24 +28,24 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
     setError('');
 
     if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError(t('Please fill in all fields'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('Password must be at least 6 characters'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('Passwords do not match'));
       return;
     }
 
     try {
       await signup(email, password, name);
     } catch (_err) {
-      setError('Failed to create account. Please try again.');
+      setError(t('Failed to create account. Please try again.'));
     }
   };
 
@@ -54,21 +56,21 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
           <div className="flex items-center justify-center mx-auto mb-4">
             <SmartBusLogo size={80} className="" />
           </div>
-          <h1 className="text-2xl font-medium">Join SmartBus</h1>
-          <p className="text-muted-foreground">🇪🇹 Create your account to get started</p>
+          <h1 className="text-2xl font-medium">{t('Join SmartBus')}</h1>
+          <p className="text-muted-foreground">🇪🇹 {t('Create your account to get started')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="block text-sm font-medium mb-1">
-              Full Name
+              {t('Full Name')}
             </Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="name"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder={t('Enter your full name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="pl-10 w-full"
@@ -79,14 +81,14 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+              {t('Email')}
             </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('Enter your email')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 w-full"
@@ -97,14 +99,14 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
+              {t('Password')}
             </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Create a password"
+                placeholder={t('Create a password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10 w-full"
@@ -123,14 +125,14 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
-              Confirm Password
+              {t('Confirm Password')}
             </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm your password"
+                placeholder={t('Confirm your password')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="pl-10 pr-10 w-full"
@@ -157,32 +159,37 @@ export function Register({ onSwitchToLogin }: SignupFormProps) {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating account...
+                {t('Creating account...')}
               </>
             ) : (
-              'Create Account'
+              t('Create Account')
             )}
           </Button>
         </form>
 
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('Already have an account?')}{' '}
             <button
               onClick={onSwitchToLogin}
               className="text-primary hover:underline"
               disabled={isLoading}
             >
-              Sign in
+              {t('Sign in')}
             </button>
           </p>
         </div>
 
         <div className="text-xs text-muted-foreground text-center space-y-1">
-          <p>By creating an account, you agree to our</p>
+          <p>{t('By creating an account, you agree to our')}</p>
           <p>
-            <span className="text-primary hover:underline cursor-pointer">Terms of Service</span>{' '}
-            and <span className="text-primary hover:underline cursor-pointer">Privacy Policy</span>
+            <span className="text-primary hover:underline cursor-pointer">
+              {t('Terms of Service')}
+            </span>{' '}
+            {t('and')}{' '}
+            <span className="text-primary hover:underline cursor-pointer">
+              {t('Privacy Policy')}
+            </span>
           </p>
         </div>
       </Card>

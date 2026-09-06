@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import { Navigation } from 'lucide-react';
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import 'leaflet/dist/leaflet.css';
@@ -19,6 +20,7 @@ function MapUpdater({ center }: { center: [number, number] }) {
 }
 
 export function MapCard({ onOpenMap, userLocation }: MapCardProps) {
+  const { t } = useLanguage();
   const center: [number, number] = userLocation
     ? [userLocation.lat, userLocation.lng]
     : DEFAULT_CENTER;
@@ -59,9 +61,9 @@ export function MapCard({ onOpenMap, userLocation }: MapCardProps) {
               <Navigation className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold">Track Nearby Buses</p>
+              <p className="text-sm font-semibold">{t('Track Nearby Buses')}</p>
               <p className="text-xs text-white/70">
-                {userLocation ? 'Live location enabled' : 'Tap to enable location'}
+                {userLocation ? t('Live location enabled') : t('Tap to enable location')}
               </p>
             </div>
           </div>
@@ -74,7 +76,7 @@ export function MapCard({ onOpenMap, userLocation }: MapCardProps) {
               onOpenMap();
             }}
           >
-            Open
+            {t('Open')}
           </Button>
         </div>
       </div>

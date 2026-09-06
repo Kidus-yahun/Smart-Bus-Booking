@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { busesApi, ticketsApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
+import { capitalize } from '../i18n/translations';
 
 interface BookingProps {
   busId: string;
@@ -22,6 +24,7 @@ interface BookingProps {
 type BookingStep = 'station-selection' | 'fare-selection' | 'seat-selection' | 'payment-processing';
 
 export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
+  const { t } = useLanguage();
   const [bookingStep, setBookingStep] = useState<BookingStep>('station-selection');
   const [selectedFareType, setSelectedFareType] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
@@ -147,22 +150,22 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h2 className="text-xl font-semibold">Book Ticket</h2>
+        <h2 className="text-xl font-semibold">{t('Book Ticket')}</h2>
       </div>
 
       {bookingStep === 'station-selection' && (
         <Card className="p-4">
-          <h3 className="font-medium mb-4">Select Stations</h3>
+          <h3 className="font-medium mb-4">{t('Select Stations')}</h3>
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Boarding Station</label>
+              <label className="text-sm font-medium mb-2 block">{t('Boarding Station')}</label>
               <Select
                 value={boardingStationId?.toString() || ''}
                 onValueChange={(v) => setBoardingStationId(parseInt(v, 10))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select boarding station" />
+                  <SelectValue placeholder={t('Select boarding station')} />
                 </SelectTrigger>
                 <SelectContent>
                   {stations?.map((station) => (
@@ -178,13 +181,13 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Destination Station</label>
+              <label className="text-sm font-medium mb-2 block">{t('Destination Station')}</label>
               <Select
                 value={destinationStationId?.toString() || ''}
                 onValueChange={(v) => setDestinationStationId(parseInt(v, 10))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select destination station" />
+                  <SelectValue placeholder={t('Select destination station')} />
                 </SelectTrigger>
                 <SelectContent>
                   {stations
@@ -207,7 +210,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
             onClick={handleStationContinue}
             disabled={!boardingStationId || !destinationStationId}
           >
-            Continue
+            {t('Continue')}
           </Button>
         </Card>
       )}
@@ -223,7 +226,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
             </div>
           )}
 
-          <h3 className="font-medium mb-4">Select Fare Type</h3>
+          <h3 className="font-medium mb-4">{t('Select Fare Type')}</h3>
 
           {faresLoading ? (
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -241,36 +244,36 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium capitalize">{fare.fare_type}</p>
+                      <p className="font-medium capitalize">{t(capitalize(fare.fare_type))}</p>
                       <p className="text-xs text-muted-foreground">
-                        {fare.fare_type === 'adult' && 'Standard fare'}
-                        {fare.fare_type === 'senior' && '65+ with valid ID'}
-                        {fare.fare_type === 'student' && 'With valid student ID'}
-                        {fare.fare_type === 'child' && '5-12 years'}
-                        {fare.fare_type === 'standing' && 'No seat, stand in aisle'}
+                        {fare.fare_type === 'adult' && t('Standard fare')}
+                        {fare.fare_type === 'senior' && t('65+ with valid ID')}
+                        {fare.fare_type === 'student' && t('With valid student ID')}
+                        {fare.fare_type === 'child' && t('5-12 years')}
+                        {fare.fare_type === 'standing' && t('No seat, stand in aisle')}
                       </p>
                     </div>
-                    <span className="font-medium">{fare.price_etb} ETB</span>
+                    <span className="font-medium">{t('{0} ETB', fare.price_etb)}</span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">No fares available for this route</p>
+            <p className="text-muted-foreground">{t('No fares available for this route')}</p>
           )}
 
           <div className="mt-4">
-            <label className="text-sm font-medium">Seated Passengers</label>
+            <label className="text-sm font-medium">{t('Seated Passengers')}</label>
             <Select value={quantity.toString()} onValueChange={(v) => setQuantity(parseInt(v, 10))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">0 (standing only)</SelectItem>
-                <SelectItem value="1">1 passenger</SelectItem>
-                <SelectItem value="2">2 passengers</SelectItem>
-                <SelectItem value="3">3 passengers</SelectItem>
-                <SelectItem value="4">4 passengers</SelectItem>
+                <SelectItem value="0">{t('0 (standing only)')}</SelectItem>
+                <SelectItem value="1">{t('1 passenger')}</SelectItem>
+                <SelectItem value="2">{t('2 passengers')}</SelectItem>
+                <SelectItem value="3">{t('3 passengers')}</SelectItem>
+                <SelectItem value="4">{t('4 passengers')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -278,8 +281,8 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
           {(quantity > 0 || standingCount > 0) && (
             <div className="mt-4 p-3 bg-primary/10 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total: {totalPassengers} passengers</span>
-                <span className="font-medium text-lg">{totalPrice} ETB</span>
+                <span className="font-medium">{t('Total: {0} passengers', totalPassengers)}</span>
+                <span className="font-medium text-lg">{t('{0} ETB', totalPrice)}</span>
               </div>
             </div>
           )}
@@ -289,7 +292,7 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
             onClick={handleContinue} 
             disabled={!selectedFareType || (quantity === 0 && standingCount === 0)}
           >
-            Continue to Seat Selection
+            {t('Continue to Seat Selection')}
           </Button>
         </Card>
       )}
@@ -310,30 +313,30 @@ export function Booking({ busId, onBack, onBookingComplete }: BookingProps) {
 
       {bookingStep === 'payment-processing' && (
         <Card className="p-4">
-          <h3 className="font-medium mb-4">Booking Summary</h3>
+          <h3 className="font-medium mb-4">{t('Booking Summary')}</h3>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Fare Type</span>
-              <span className="capitalize">{selectedFareType}</span>
+              <span className="text-muted-foreground">{t('Fare Type')}</span>
+              <span className="capitalize">{t(capitalize(selectedFareType))}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Passengers</span>
+              <span className="text-muted-foreground">{t('Passengers')}</span>
               <span>{quantity}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Seats</span>
-              <span>{selectedSeats.length > 0 ? selectedSeats.join(', ') : 'Auto-assigned'}</span>
+              <span className="text-muted-foreground">{t('Seats')}</span>
+              <span>{selectedSeats.length > 0 ? selectedSeats.join(', ') : t('Auto-assigned')}</span>
             </div>
             <div className="flex justify-between border-t pt-2 mt-2">
-              <span className="font-medium">Total</span>
-              <span className="font-medium text-lg">{totalPrice} ETB</span>
+              <span className="font-medium">{t('Total')}</span>
+              <span className="font-medium text-lg">{t('{0} ETB', totalPrice)}</span>
             </div>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Pay on board • No online payment required
+            {t('Pay on board • No online payment required')}
           </p>
           <Button className="w-full" onClick={handleBooking}>
-            Confirm Booking ({totalPrice} ETB)
+            {t('Confirm Booking ({0} ETB)', totalPrice)}
           </Button>
         </Card>
       )}

@@ -17,33 +17,33 @@ from sqlalchemy.sql import func
 from .database import Base
 
 
-class UserRole(enum.StrEnum):
+class UserRole(str, enum.Enum):
     PASSENGER = 'passenger'
     DRIVER = 'driver'
     ADMIN = 'admin'
 
 
-class BusStatus(enum.StrEnum):
+class BusStatus(str, enum.Enum):
     ACTIVE = 'active'
     INACTIVE = 'inactive'
     MAINTENANCE = 'maintenance'
 
 
-class TicketStatus(enum.StrEnum):
+class TicketStatus(str, enum.Enum):
     PENDING = 'pending'
     CONFIRMED = 'confirmed'
     CANCELLED = 'cancelled'
     USED = 'used'
 
 
-class PaymentStatus(enum.StrEnum):
+class PaymentStatus(str, enum.Enum):
     PENDING = 'pending'
     COMPLETED = 'completed'
     FAILED = 'failed'
     REFUNDED = 'refunded'
 
 
-class FareType(enum.StrEnum):
+class FareType(str, enum.Enum):
     ADULT = 'adult'
     SENIOR = 'senior'
     STUDENT = 'student'

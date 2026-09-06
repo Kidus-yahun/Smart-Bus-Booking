@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechHelper UI Concept</title>
+    <style>
+        /* Modern, clean reset and layout */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Mobile Frame Container */
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 780px;
+            background-color: #ffffff;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 8px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Bar / Notch Design */
+        .status-bar {
+            height: 30px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notch {
+            width: 120px;
+            height: 18px;
+            background-color: #1a1a1a;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* App Main Content */
+        .app-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #374151;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Big Search Input */
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #2563eb;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #9ca3af;
+        }
+
+        /* Category Grid */
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .app-card {
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .app-card:hover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .app-icon {
+            font-size: 32px;
+        }
+
+        .app-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 15px;
+        }
+
+        /* Prominent Human Call Button */
+        .human-call-container {
+            margin-top: auto;
+            margin-bottom: 10px;
+        }
+
+        .call-btn {
+            width: 100%;
+            background-color: #f97316;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .call-btn:hover {
+            background-color: #ea580c;
+        }
+
+        .call-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-subtext {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Modal Popup for Simulation */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .privacy-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin: 16px 0;
+            text-align: left;
+        }
+
+        .start-share-btn {
+            background: #dc2626;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            margin-top: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Phone Container -->
+    <div class="phone-frame">
+        <div class="status-bar">
+            <div class="notch"></div>
+        </div>
+
+        <div class="app-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">🛠️ TechHelper</div>
+                <div class="subtitle">Get Help with Your Phone</div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search issue (e.g., WhatsApp font)">
+            </div>
+
+            <!-- Fast App Selector -->
+            <div>
+                <div class="section-title">Or choose your app</div>
+                <div class="app-grid">
+                    <div class="app-card" onclick="alert('Opening Telegram guided fixes...')">
+                        <span class="app-icon">✈️</span>
+                        <span class="app-name">Telegram</span>
+                    </div>
+                    <div class="app-card" onclick="alert('Opening WhatsApp guided fixes...')">
+                        <span class="app-icon">💬</span>
+                        <span class="app-name">WhatsApp</span>
+                    </div>
+                    <div class="app-card" onclick="alert('Opening Instagram guided fixes...')">
+                        <span class="app-icon">📸</span>
+                        <span class="app-name">Instagram</span>
+                    </div>
+                    <div class="app-card" onclick="alert('Opening Settings guided fixes...')">
+                        <span class="app-icon">⚙️</span>
+                        <span class="app-name">Settings</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Human Action -->
+            <div class="human-call-container">
+                <button class="call-btn" onclick="openShareModal()">
+                    📞 
+                    <div>
+                        TALK TO A HUMAN
+                        <span class="btn-subtext">(One-Tap Screen Share)</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Privacy & Screen Share Modal -->
+        <div class="modal" id="shareModal">
+            <div class="modal-content">
+                <h3>Connecting to Helper...</h3>
+                <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Sarah (⭐ 4.9)</p>
+
+                <div class="privacy-box">
+                    <strong>🔒 PRIVACY SAFEGUARD:</strong><br>
+                    Helper ONLY sees this app screen. Passwords and personal photos are automatically hidden.
+                </div>
+
+                <button class="start-share-btn" onclick="alert('Starting Screen Sharing Session...')">
+                    🔴 START SCREEN SHARING
+                </button>
+                <button class="cancel-btn" onclick="closeShareModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openShareModal() {
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

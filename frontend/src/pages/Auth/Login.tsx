@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
@@ -13,6 +14,7 @@ interface LoginFormProps {
 
 export function Login({ onSwitchToSignup }: LoginFormProps) {
   const { login, isLoading } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,19 +25,19 @@ export function Login({ onSwitchToSignup }: LoginFormProps) {
     setError('');
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError(t('Please fill in all fields'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('Password must be at least 6 characters'));
       return;
     }
 
     try {
       await login(email, password);
     } catch (_err) {
-      setError('Invalid email or password');
+      setError(t('Invalid email or password'));
     }
   };
 
@@ -46,21 +48,21 @@ export function Login({ onSwitchToSignup }: LoginFormProps) {
           <div className="flex items-center justify-center mx-auto mb-4">
             <SmartBusLogo size={80} className="" />
           </div>
-          <h1 className="text-2xl font-medium">Welcome to SmartBus</h1>
-          <p className="text-muted-foreground">🇪🇹 Sign in to book your bus tickets</p>
+          <h1 className="text-2xl font-medium">{t('Welcome to SmartBus')}</h1>
+          <p className="text-muted-foreground">🇪🇹 {t('Sign in to book your bus tickets')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+              {t('Email')}
             </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('Enter your email')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 w-full"
@@ -71,14 +73,14 @@ export function Login({ onSwitchToSignup }: LoginFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
+              {t('Password')}
             </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
+                placeholder={t('Enter your password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10 w-full"
@@ -105,33 +107,33 @@ export function Login({ onSwitchToSignup }: LoginFormProps) {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Signing in...
+                {t('Signing in...')}
               </>
             ) : (
-              'Sign In'
+              t('Sign In')
             )}
           </Button>
         </form>
 
         <div className="text-center space-y-4">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            {t("Don't have an account?")}{' '}
             <button
               type="button"
               onClick={onSwitchToSignup}
               className="text-primary hover:underline"
               disabled={isLoading}
             >
-              Create account
+              {t('Create account')}
             </button>
           </p>
 
           <div className="bg-muted/50 rounded-lg p-3">
-            <p className="text-sm text-muted-foreground mb-2">Demo credentials:</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('Demo credentials:')}</p>
             <p className="text-xs text-muted-foreground">
-              Email: demo@smartbus.com
+              {t('Email')}: demo@smartbus.com
               <br />
-              Password: demo123
+              {t('Password')}: demo123
             </p>
           </div>
         </div>

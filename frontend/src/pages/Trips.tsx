@@ -13,12 +13,15 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ticketsApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
+import { capitalize } from '../i18n/translations';
 
 interface TripsProps {
   onBack: () => void;
 }
 
 export function Trips({ onBack }: TripsProps) {
+  const { t, formatDate, formatTime } = useLanguage();
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
 
   const {
@@ -33,33 +36,16 @@ export function Trips({ onBack }: TripsProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge className="bg-yellow-500">Pending</Badge>;
+        return <Badge className="bg-yellow-500">{t('Pending')}</Badge>;
       case 'confirmed':
-        return <Badge className="bg-green-500">Confirmed</Badge>;
+        return <Badge className="bg-green-500">{t('Confirmed')}</Badge>;
       case 'used':
-        return <Badge className="bg-blue-500">Used</Badge>;
+        return <Badge className="bg-blue-500">{t('Used')}</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-500">Cancelled</Badge>;
+        return <Badge className="bg-red-500">{t('Cancelled')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   const activeTickets =
@@ -80,9 +66,9 @@ export function Trips({ onBack }: TripsProps) {
   if (error) {
     return (
       <Card className="p-4">
-        <p className="text-red-500">Failed to load tickets. Please try again.</p>
+        <p className="text-red-500">{t('Failed to load tickets. Please try again.')}</p>
         <Button onClick={onBack} className="mt-4">
-          Go Back
+          {t('Go Back')}
         </Button>
       </Card>
     );
@@ -90,15 +76,15 @@ export function Trips({ onBack }: TripsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">My Trips</h2>
+      <h2 className="text-xl font-semibold">{t('My Trips')}</h2>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'active' | 'completed')}>
         <TabsList className="w-full">
           <TabsTrigger value="active" className="flex-1">
-            Active ({activeTickets.length})
+            {t('Active ({0})', activeTickets.length)}
           </TabsTrigger>
           <TabsTrigger value="completed" className="flex-1">
-            History ({completedTickets.length})
+            {t('History ({0})', completedTickets.length)}
           </TabsTrigger>
         </TabsList>
 
@@ -113,7 +99,7 @@ export function Trips({ onBack }: TripsProps) {
                       {getStatusBadge(ticket.status)}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {formatDate(ticket.travel_date)} at {formatTime(ticket.travel_date)}
+                      {t('{0} at {1}', formatDate(ticket.travel_date), formatTime(ticket.travel_date))}
                     </p>
                   </div>
                   <DropdownMenu>
@@ -125,11 +111,11 @@ export function Trips({ onBack }: TripsProps) {
                     <DropdownMenuContent>
                       <DropdownMenuItem>
                         <Download className="h-4 w-4 mr-2" />
-                        Download Ticket
+                        {t('Download Ticket')}
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Share2 className="h-4 w-4 mr-2" />
-                        Share
+                        {t('Share')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -137,26 +123,26 @@ export function Trips({ onBack }: TripsProps) {
 
                 <div className="grid grid-cols-2 gap-2 text-sm mt-3">
                   <div>
-                    <p className="text-muted-foreground">Fare Type</p>
-                    <p className="font-medium capitalize">{ticket.fare_type}</p>
+                    <p className="text-muted-foreground">{t('Fare Type')}</p>
+                    <p className="font-medium capitalize">{t(capitalize(ticket.fare_type))}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Quantity</p>
+                    <p className="text-muted-foreground">{t('Quantity')}</p>
                     <p className="font-medium">{ticket.quantity}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Total Price</p>
-                    <p className="font-medium">{ticket.total_price_etb} ETB</p>
+                    <p className="text-muted-foreground">{t('Total Price')}</p>
+                    <p className="font-medium">{t('{0} ETB', ticket.total_price_etb)}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Booked</p>
+                    <p className="text-muted-foreground">{t('Booked')}</p>
                     <p className="font-medium">{formatDate(ticket.booking_time)}</p>
                   </div>
                 </div>
 
                 {ticket.qr_code && (
                   <div className="mt-3 pt-3 border-t">
-                    <p className="text-xs text-muted-foreground mb-2">QR Code</p>
+                    <p className="text-xs text-muted-foreground mb-2">{t('QR Code')}</p>
                     <div className="flex justify-center">
                       <canvas
                         className="w-24 h-24"
@@ -177,9 +163,9 @@ export function Trips({ onBack }: TripsProps) {
           ) : (
             <Card className="p-8 text-center">
               <Bus className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-              <p className="text-muted-foreground">No active trips</p>
+              <p className="text-muted-foreground">{t('No active trips')}</p>
               <Button className="mt-4" onClick={onBack}>
-                Book a Trip
+                {t('Book a Trip')}
               </Button>
             </Card>
           )}
@@ -199,13 +185,13 @@ export function Trips({ onBack }: TripsProps) {
                       {formatDate(ticket.travel_date)}
                     </p>
                   </div>
-                  <p className="font-medium">{ticket.total_price_etb} ETB</p>
+                  <p className="font-medium">{t('{0} ETB', ticket.total_price_etb)}</p>
                 </div>
               </Card>
             ))
           ) : (
             <Card className="p-8 text-center">
-              <p className="text-muted-foreground">No trip history</p>
+              <p className="text-muted-foreground">{t('No trip history')}</p>
             </Card>
           )}
         </TabsContent>

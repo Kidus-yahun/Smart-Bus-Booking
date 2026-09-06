@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Bus, Loader2, MapPin, Navigation } from 'lucide-react';
 import { useState } from 'react';
 import { busesApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -14,6 +15,7 @@ interface StationDetailProps {
 }
 
 export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailProps) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'routes' | 'info'>('routes');
 
   const { data: station, isLoading: stationLoading } = useQuery({
@@ -58,9 +60,9 @@ export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailP
   if (!station) {
     return (
       <Card className="p-4">
-        <p className="text-red-500">Station not found</p>
+        <p className="text-red-500">{t('Station not found')}</p>
         <Button onClick={onBack} className="mt-4">
-          Go Back
+          {t('Go Back')}
         </Button>
       </Card>
     );
@@ -74,7 +76,7 @@ export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailP
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h2 className="text-xl font-semibold">{station.name}</h2>
+        <h2 className="text-xl font-semibold">{t(station.name)}</h2>
       </div>
 
       <Card className="p-4">
@@ -92,10 +94,10 @@ export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailP
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'routes' | 'info')}>
         <TabsList className="w-full">
           <TabsTrigger value="routes" className="flex-1">
-            Routes
+            {t('Routes')}
           </TabsTrigger>
           <TabsTrigger value="info" className="flex-1">
-            Info
+            {t('Info')}
           </TabsTrigger>
         </TabsList>
 
@@ -109,43 +111,43 @@ export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailP
                       <Bus className="h-4 w-4" />
                       <span className="font-medium">{route.route_number}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">{route.route_name}</p>
+                    <p className="text-sm text-muted-foreground">{t(route.route_name)}</p>
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                      <span>{route.distance_km} km</span>
-                      <span>{route.estimated_duration_minutes} min</span>
+                      <span>{t('{0} km', route.distance_km)}</span>
+                      <span>{t('{0} min', route.estimated_duration_minutes)}</span>
                     </div>
                   </div>
                   <Button size="sm" onClick={() => onBookRoute(route.id.toString())}>
-                    Book
+                    {t('Book')}
                   </Button>
                 </div>
               </Card>
             ))
           ) : (
             <Card className="p-4 text-center">
-              <p className="text-muted-foreground">No routes found for this station</p>
+              <p className="text-muted-foreground">{t('No routes found for this station')}</p>
             </Card>
           )}
         </TabsContent>
 
         <TabsContent value="info" className="space-y-3 mt-4">
           <Card className="p-4">
-            <h3 className="font-medium mb-2">Facilities</h3>
+            <h3 className="font-medium mb-2">{t('Facilities')}</h3>
             <div className="flex flex-wrap gap-2">
               {facilities.length > 0 ? (
                 facilities.map((facility: string) => (
                   <Badge key={facility} variant="outline">
-                    {facility.replace('_', ' ')}
+                    {t(facility.replace('_', ' '))}
                   </Badge>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No facilities listed</p>
+                <p className="text-sm text-muted-foreground">{t('No facilities listed')}</p>
               )}
             </div>
           </Card>
 
           <Card className="p-4">
-            <h3 className="font-medium mb-2">Location</h3>
+            <h3 className="font-medium mb-2">{t('Location')}</h3>
             <Button variant="outline" className="w-full" asChild>
               <a
                 href={`https://www.google.com/maps/dir/?api=1&destination=${station.latitude},${station.longitude}`}
@@ -153,7 +155,7 @@ export function StationDetail({ stationId, onBack, onBookRoute }: StationDetailP
                 rel="noopener noreferrer"
               >
                 <Navigation className="h-4 w-4 mr-2" />
-                Get Directions
+                {t('Get Directions')}
               </a>
             </Button>
           </Card>

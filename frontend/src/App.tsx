@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { MapBottomSheet } from './components/MapBottomSheet';
 import { MapCard } from './components/MapCard';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useUserLocation } from './hooks/useUserLocation';
 import { Booking } from './pages/Booking';
@@ -32,6 +33,7 @@ const pageTransition = {
 
 function MainApp() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [currentState, setCurrentState] = useState<AppState>('home');
   const [selectedBusId, setSelectedBusId] = useState<string | null>(null);
   const [ticketId, setTicketId] = useState<string | null>(null);
@@ -92,8 +94,8 @@ function MainApp() {
         return (
           <>
             <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 mb-4">
-              <h2 className="font-medium mb-1">Welcome back, {user?.name.split(' ')[0] || 'User'}! 👋</h2>
-              <p className="text-sm text-muted-foreground">Ready to book your next bus journey?</p>
+              <h2 className="font-medium mb-1">{t('Welcome back, {0}! 👋', user?.name.split(' ')[0] || 'User')}</h2>
+              <p className="text-sm text-muted-foreground">{t('Ready to book your next bus journey?')}</p>
             </div>
             <MapCard onOpenMap={() => setShowMap(true)} userLocation={userLocation} />
             <BusArrivalsList onSelectBus={handleSelectBus} />
@@ -149,9 +151,11 @@ function MainApp() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <MainApp />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <MainApp />
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

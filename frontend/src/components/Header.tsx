@@ -1,5 +1,6 @@
-import { Moon, Sun } from 'lucide-react';
+import { Globe, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 export function Header({ onNavigate }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
   const { user } = useAuth();
 
   const getInitials = (name: string) => {
@@ -21,7 +23,7 @@ export function Header({ onNavigate }: HeaderProps) {
   };
 
   return (
-    <div className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+    <div className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50 px-4">
       <div className="flex items-center justify-between py-2 max-w-md mx-auto">
         <Button
           variant="ghost"
@@ -36,9 +38,22 @@ export function Header({ onNavigate }: HeaderProps) {
           <span className="text-sm font-medium">{user?.name.split(' ')[0]}</span>
         </Button>
 
-        <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-          {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLanguage(language === 'en' ? 'am' : 'en')}
+            className="rounded-full px-3 py-1 text-xs font-semibold flex items-center gap-1.5 border-primary/30 hover:bg-primary/10"
+            title="Switch Language / ቋንቋ ቀይር"
+          >
+            <Globe className="h-3.5 w-3.5 text-primary" />
+            <span>{language === 'en' ? 'አማርኛ' : 'English'}</span>
+          </Button>
+
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+            {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
     </div>
   );

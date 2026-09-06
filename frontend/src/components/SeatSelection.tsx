@@ -1,6 +1,7 @@
 import { ArrowLeft, Car } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { busesApi } from '../lib/api';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -32,6 +33,7 @@ export function SeatSelection({
   onSeatsSelected,
   onBack,
 }: SeatSelectionProps) {
+  const { t } = useLanguage();
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [selectedStanding, setSelectedStanding] = useState<string[]>([]);
@@ -207,7 +209,7 @@ export function SeatSelection({
         <div className="bg-white rounded-lg p-4 max-h-96 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-sm text-muted-foreground">Loading seat map...</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('Loading seat map...')}</p>
           </div>
         </div>
       );
@@ -222,15 +224,15 @@ export function SeatSelection({
         <div className="flex justify-center gap-4 mb-4 text-xs">
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300"></div>
-            <span>Available</span>
+            <span>{t('Available')}</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded bg-green-500"></div>
-            <span>Selected</span>
+            <span>{t('Selected')}</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded bg-red-500"></div>
-            <span>Occupied</span>
+            <span>{t('Occupied')}</span>
           </div>
         </div>
 
@@ -267,7 +269,7 @@ export function SeatSelection({
                         ? 'bg-green-500 border-2 border-green-600 text-white' 
                         : 'bg-orange-300 border-2 border-orange-400 text-orange-700 hover:bg-orange-400'}
                     `}
-                    title="Standing position"
+                    title={t('Standing position')}
                   >
                     🧍
                   </button>
@@ -284,7 +286,7 @@ export function SeatSelection({
 
         {standingCount > 0 && (
           <div className="mt-3 p-2 bg-orange-50 rounded-lg text-center text-sm text-orange-800">
-            🧍 Standing: {standingCount - selectedStanding.length} spots remaining
+            🧍 {t('Standing: {0} spots remaining', standingCount - selectedStanding.length)}
           </div>
         )}
       </div>
@@ -294,33 +296,33 @@ export function SeatSelection({
   const renderInfo = () => (
     <div className="bg-white rounded-lg p-4 space-y-4">
       <div>
-        <h3 className="font-medium mb-2">Bus Information</h3>
+        <h3 className="font-medium mb-2">{t('Bus Information')}</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Route Number: {busInfo.route}</p>
-          <p>• Total Seats: {busInfo.capacity}</p>
-          <p>• Available Seats: {seats.filter((s) => s.status === 'available').length}</p>
-          <p>• Features: {busInfo.features.join(', ')}</p>
+          <p>• {t('Route Number: {0}', busInfo.route)}</p>
+          <p>• {t('Total Seats: {0}', busInfo.capacity)}</p>
+          <p>• {t('Available Seats: {0}', seats.filter((s) => s.status === 'available').length)}</p>
+          <p>• {t('Features: {0}', busInfo.features.map((f) => t(f)).join(', '))}</p>
         </div>
       </div>
 
       <div>
-        <h3 className="font-medium mb-2">Route Information</h3>
+        <h3 className="font-medium mb-2">{t('Route Information')}</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Origin: {busInfo.origin}</p>
-          <p>• Destination: {busInfo.destination}</p>
-          <p>• Distance: 8.5 km</p>
-          <p>• Estimated Duration: 35 minutes</p>
-          <p>• Date: {busInfo.date}</p>
+          <p>• {t('Origin: {0}', t(busInfo.origin))}</p>
+          <p>• {t('Destination: {0}', t(busInfo.destination))}</p>
+          <p>• {t('Distance: 8.5 km')}</p>
+          <p>• {t('Estimated Duration: 35 minutes')}</p>
+          <p>• {t('Date: {0}', busInfo.date)}</p>
         </div>
       </div>
 
       <div>
-        <h3 className="font-medium mb-2">Boarding Rules</h3>
+        <h3 className="font-medium mb-2">{t('Boarding Rules')}</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Please arrive 10 minutes before departure</p>
-          <p>• Show QR code to conductor when boarding</p>
-          <p>• Seat assignment is mandatory</p>
-          <p>• No smoking or loud music allowed</p>
+          <p>• {t('Please arrive 10 minutes before departure')}</p>
+          <p>• {t('Show QR code to conductor when boarding')}</p>
+          <p>• {t('Seat assignment is mandatory')}</p>
+          <p>• {t('No smoking or loud music allowed')}</p>
         </div>
       </div>
     </div>
@@ -329,39 +331,39 @@ export function SeatSelection({
   const renderReview = () => (
     <div className="bg-white rounded-lg p-4 space-y-4">
       <div>
-        <h3 className="font-medium mb-2">Selected Seats</h3>
+        <h3 className="font-medium mb-2">{t('Selected Seats')}</h3>
         {selectedSeats.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {selectedSeats.map((seatId) => (
               <Badge key={seatId} variant="secondary" className="bg-green-100 text-green-800">
-                Seat {seatId}
+                {t('Seat {0}', seatId)}
               </Badge>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">No seats selected</p>
+          <p className="text-sm text-muted-foreground">{t('No seats selected')}</p>
         )}
       </div>
 
       <div>
-        <h3 className="font-medium mb-2">Booking Summary</h3>
+        <h3 className="font-medium mb-2">{t('Booking Summary')}</h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span>Route:</span>
+            <span>{t('Route:')}</span>
             <span>{busInfo.route}</span>
           </div>
           <div className="flex justify-between">
-            <span>Selected Seats:</span>
+            <span>{t('Selected Seats:')}</span>
             <span>
-              {selectedSeats.length} of {requiredSeats}
+              {t('{0} of {1}', selectedSeats.length, requiredSeats)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span>Seat Numbers:</span>
-            <span>{selectedSeats.join(', ') || 'None'}</span>
+            <span>{t('Seat Numbers:')}</span>
+            <span>{selectedSeats.join(', ') || t('None')}</span>
           </div>
           <div className="flex justify-between">
-            <span>Travel Date:</span>
+            <span>{t('Travel Date:')}</span>
             <span>{busInfo.date}</span>
           </div>
         </div>
@@ -370,7 +372,7 @@ export function SeatSelection({
       {selectedSeats.length === requiredSeats && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           <p className="text-sm text-green-800">
-            ✅ Perfect! You have selected all {requiredSeats} required seats.
+            ✅ {t('Perfect! You have selected all {0} required seats.', requiredSeats)}
           </p>
         </div>
       )}
@@ -385,9 +387,9 @@ export function SeatSelection({
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-medium">Select Seat(s)</h1>
+          <h1 className="text-xl font-medium">{t('Select Seat(s)')}</h1>
           <p className="text-sm text-muted-foreground">
-            {seats.filter((s) => s.status === 'available').length} • {busInfo.capacity}
+            {t('Available Seats: {0}', seats.filter((s) => s.status === 'available').length)} • {t('Total Seats: {0}', busInfo.capacity)}
           </p>
         </div>
       </div>
@@ -402,9 +404,9 @@ export function SeatSelection({
           <Badge variant="outline">🇪🇹</Badge>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{busInfo.origin.toUpperCase()}</span>
+          <span>{t(busInfo.origin).toUpperCase()}</span>
           <span>→</span>
-          <span>{busInfo.destination.toUpperCase()}</span>
+          <span>{t(busInfo.destination).toUpperCase()}</span>
         </div>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-sm">📅 {busInfo.date}</span>
@@ -421,7 +423,7 @@ export function SeatSelection({
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Seat plan
+          {t('Seat plan')}
         </button>
         <button
           onClick={() => setActiveTab('info')}
@@ -431,7 +433,7 @@ export function SeatSelection({
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Info
+          {t('Info')}
         </button>
         <button
           onClick={() => setActiveTab('review')}
@@ -441,7 +443,7 @@ export function SeatSelection({
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Review
+          {t('Review')}
         </button>
       </div>
 
@@ -450,19 +452,19 @@ export function SeatSelection({
         <div className="flex justify-center gap-6 text-xs">
           <div className="flex items-center gap-1">
             <div className="w-4 h-5 bg-gray-100 border-2 border-gray-300 rounded"></div>
-            <span>Available</span>
+            <span>{t('Available')}</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-5 bg-red-500 rounded"></div>
-            <span>Occupied</span>
+            <span>{t('Occupied')}</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-5 bg-green-500 rounded"></div>
-            <span>Selected</span>
+            <span>{t('Selected')}</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-5 bg-orange-500 rounded"></div>
-            <span>Reserved</span>
+            <span>{t('Reserved')}</span>
           </div>
         </div>
       )}
@@ -483,12 +485,12 @@ export function SeatSelection({
           onClick={() => onSeatsSelected(selectedSeats)}
         >
           {selectedSeats.length === 0 && selectedStanding.length === 0
-            ? `Select seat or standing to continue`
+            ? t('Select seat or standing to continue')
             : selectedSeats.length > 0 && selectedStanding.length > 0
-              ? `Continue: ${selectedSeats.length} seats + ${selectedStanding.length} 🧍`
+              ? t('Continue: {0} seats + {1} 🧍', selectedSeats.length, selectedStanding.length)
               : selectedSeats.length > 0
-                ? `Continue with ${selectedSeats.join(', ')}`
-                : `Continue with ${selectedStanding.length} 🧍 standing`}
+                ? t('Continue with {0}', selectedSeats.join(', '))
+                : t('Continue with {0} 🧍 standing', selectedStanding.length)}
         </Button>
       </div>
     </div>
