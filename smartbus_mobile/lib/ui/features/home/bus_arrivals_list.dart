@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/bus_arrival_model.dart';
 import '../../../data/providers/language_provider.dart';
+import '../../core/theme.dart';
 import '../../core/translations.dart';
 import 'bus_details_modal.dart';
 
@@ -14,32 +15,6 @@ class BusArrivalsList extends StatelessWidget {
     required this.arrivals,
     required this.onSelectBus,
   });
-
-  Color _getOccupancyColor(String occupancy) {
-    switch (occupancy) {
-      case 'low':
-        return Colors.green;
-      case 'medium':
-        return Colors.orange;
-      case 'high':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getOccupancyText(String occupancy, String lang) {
-    switch (occupancy) {
-      case 'low':
-        return AppTranslations.translate('Seats available', lang);
-      case 'medium':
-        return AppTranslations.translate('Filling up', lang);
-      case 'high':
-        return AppTranslations.translate('Almost full', lang);
-      default:
-        return occupancy;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,51 +45,129 @@ class BusArrivalsList extends StatelessWidget {
           itemBuilder: (context, index) {
             final bus = arrivals[index];
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 1.5,
+            return Container(
+              margin: const EdgeInsets.only(bottom: 14),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(14.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    // Minutes away big display & travel info (Matching Design Image)
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.black12,
-                            borderRadius: BorderRadius.circular(8),
+                        // Big 05 min departure label
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${bus.minutesAway.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : const Color(0xFF1E293B),
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' min',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                          child: const Icon(Icons.directions_bus, size: 24),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 20),
+
+                        // Travel time & bus route badge
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
+                                  const Text('Travel time: ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  const Text('15 min', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                  const Spacer(),
                                   Text(
-                                    bus.routeNumber,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    bus.arrivalTime,
+                                    style: const TextStyle(color: AppTheme.blueAccent, fontWeight: FontWeight.bold, fontSize: 13),
                                   ),
-                                  if (bus.accessible) ...[
-                                    const SizedBox(width: 6),
-                                    const Icon(Icons.accessible, size: 16, color: Colors.green),
-                                  ],
                                 ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                AppTranslations.translate('to {0}', lang, [AppTranslations.translate(bus.destination, lang)]),
-                                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.orangeAccent,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.directions_bus, size: 12, color: Colors.white),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          bus.routeNumber,
+                                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.blueAccent,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text('Express', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Origin & Destination timeline dots
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.blueAccent, width: 2),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppTranslations.translate('Meskel Square', lang),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
+                        const Spacer(),
                         IconButton(
-                          icon: const Icon(Icons.more_vert),
+                          icon: const Icon(Icons.info_outline, size: 20, color: Colors.grey),
                           onPressed: () {
                             showModalBottomSheet(
                               context: context,
@@ -131,44 +184,43 @@ class BusArrivalsList extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                            const SizedBox(width: 4),
-                            Text(
-                              bus.minutesAway > 0
-                                  ? AppTranslations.translate('{0} min', lang, [bus.minutesAway])
-                                  : AppTranslations.translate('Arriving now', lang),
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
-                          ],
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppTheme.orangeAccent,
+                            shape: BoxShape.circle,
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
-                          _getOccupancyText(bus.occupancy, lang),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: _getOccupancyColor(bus.occupancy),
+                          AppTranslations.translate(bus.destination, lang),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
+                        const Spacer(),
+
+                        // Emerald Green Pill Ticket Button (Matching Design Image: "Ticket: 15 ETB")
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 3,
+                            shadowColor: AppTheme.primaryColor.withOpacity(0.4),
+                          ),
+                          onPressed: () => onSelectBus(bus),
+                          icon: const Icon(Icons.shopping_cart_outlined, size: 16),
+                          label: Text(
+                            'Ticket: 15 ${AppTranslations.translate('ETB', lang)}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        onPressed: () => onSelectBus(bus),
-                        child: Text(AppTranslations.translate('Buy Ticket', lang)),
-                      ),
                     ),
                   ],
                 ),

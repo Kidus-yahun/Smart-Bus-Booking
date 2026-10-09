@@ -4,6 +4,7 @@ import '../../../data/models/bus_arrival_model.dart';
 import '../../../data/providers/auth_provider.dart';
 import '../../../data/providers/language_provider.dart';
 import '../../../data/services/api_service.dart';
+import '../../core/theme.dart';
 import '../../core/translations.dart';
 import '../booking/booking_screen.dart';
 import 'bus_arrivals_list.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<BusArrivalModel> _arrivals = [];
   bool _isLoading = true;
+  int _selectedFilterIndex = 1; // 15 min bus selected
 
   @override
   void initState() {
@@ -54,93 +56,178 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = Provider.of<AuthProvider>(context).user;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting Banner
+          // Greeting Subtitle
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Text(
+              AppTranslations.translate('Ready to book your next bus journey?', lang),
+              style: const TextStyle(fontSize: 13, color: Colors.white70),
+            ),
+          ),
+
+          // Route Input Card (Matching Design Image: White floating card with Blue & Orange Dots)
           Container(
-            width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  AppTranslations.translate(
-                    'Welcome back, {0}! 👋',
-                    lang,
-                    [user?.fullName.split(' ')[0] ?? 'User'],
-                  ),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                // Origin Row
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.blueAccent, width: 3),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('From', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                          Text(
+                            AppTranslations.translate('Meskel Square', lang),
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  AppTranslations.translate('Ready to book your next bus journey?', lang),
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      height: 16,
+                      child: VerticalDivider(thickness: 1.5, color: Colors.grey),
+                    ),
+                  ),
+                ),
+                // Destination Row
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: const BoxDecoration(
+                        color: AppTheme.orangeAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('To', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                          Text(
+                            AppTranslations.translate('Bole Airport', lang),
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.swap_vert, size: 20, color: Colors.black54),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
 
-          // Map Card Widget
-          Container(
-            height: 140,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.blue[900],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // Transport Mode Duration Filter Pills (Matching Reference Image)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.navigation, color: Colors.white, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          AppTranslations.translate('Track Nearby Buses', lang),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      ),
-                      onPressed: () {},
-                      child: Text(AppTranslations.translate('Open', lang)),
-                    ),
-                  ],
-                ),
-                Text(
-                  AppTranslations.translate('Live location enabled', lang),
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
-                ),
+                _buildFilterPill(0, Icons.directions_walk, '9 min', false),
+                const SizedBox(width: 10),
+                _buildFilterPill(1, Icons.directions_bus, '15 min', true), // Selected Blue
+                const SizedBox(width: 10),
+                _buildFilterPill(2, Icons.nordic_walking, '30 min', false),
+                const SizedBox(width: 10),
+                _buildFilterPill(3, Icons.directions_car, '12 min', false),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // Bus Arrivals
+          // Bus Arrivals List
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : BusArrivalsList(
                   arrivals: _arrivals,
                   onSelectBus: _onSelectBus,
                 ),
+          const SizedBox(height: 80), // Padding for bottom navbar
         ],
+      ),
+    );
+  }
+
+  Widget _buildFilterPill(int index, IconData icon, String label, bool isSelected) {
+    return GestureDetector(
+      onTap: () => setState(() => _selectedFilterIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: _selectedFilterIndex == index ? AppTheme.blueAccent : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: _selectedFilterIndex == index
+                  ? AppTheme.blueAccent.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: _selectedFilterIndex == index ? Colors.white : Colors.grey[600],
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: _selectedFilterIndex == index ? Colors.white : Colors.grey[700],
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
