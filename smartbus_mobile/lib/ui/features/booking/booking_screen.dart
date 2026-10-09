@@ -202,7 +202,7 @@ class _BookingScreenState extends State<BookingScreen> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Selected Seats:'),
                     Text(_selectedSeats.join(', ')),
@@ -210,7 +210,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
                 const SizedBox(height: 12),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Total Fare:'),
                     Text('${_quantity * 15} ETB', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),

@@ -85,7 +85,7 @@ class _MyTripsScreenState extends State<MyTripsScreen> with SingleTickerProvider
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('#${ticket.ticketNumber}', style: const TextStyle(fontWeight: FontWeight.bold)),
                     Container(
