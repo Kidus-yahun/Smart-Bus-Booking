@@ -8,6 +8,7 @@ import '../../core/theme.dart';
 import '../../core/translations.dart';
 import '../booking/booking_screen.dart';
 import 'bus_arrivals_list.dart';
+import 'map_view_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -158,6 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+
+          // Interactive Map Card (OpenStreetMap with Live Bus & Station Pins)
+          const MapViewCard(height: 190),
           const SizedBox(height: 16),
 
           // Transport Mode Duration Filter Pills (Matching Reference Image)
