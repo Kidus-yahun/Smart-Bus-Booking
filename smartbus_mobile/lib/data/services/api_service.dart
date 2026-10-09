@@ -67,7 +67,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return login(email, password);
+        return await login(email, password);
       }
     } catch (_) {}
 

@@ -53,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = Provider.of<LanguageProvider>(context).language;
-    final user = Provider.of<AuthProvider>(context).user;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
